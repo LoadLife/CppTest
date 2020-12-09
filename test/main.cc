@@ -15,19 +15,16 @@ protected:
 void Template_Test::SetUpTestCase() {
 
 }
-void Template_Test::TearDownTestCase(){
+void Template_Test::TearDownTestCase() {
 
 } 
-
-void test_stack() {
-  Stack<int> s;
-  s.push(3);
-  EXPECT_EQ(1,1);
-  int b;
-  s.pop(b);
-  cout << "b: " << b <<endl;
-  cout << "stack's size : " << s.size() << endl;
-  cout << __FILE__<< endl;
+TEST_F(Template_Test,test_stack) {
+  Stack<int> stack;
+  int ele = 3;
+  stack.push(3);
+  int tmp;
+  s.pop(tmp);
+  EXPECT_EQ(ele, tmp);
 }
 
 int main(int argc, char** argv) {
