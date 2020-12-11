@@ -15,7 +15,7 @@ void Template_Test::TearDown() {
 ---------------------------------------------------------------------- */
 
 //----------------------Test Case------------------------------------
-// stack_test 
+// stack test 
 TEST(Template_Test, test_stack) {
   Stack<int> stack;
   int ele = 3;
@@ -26,7 +26,7 @@ TEST(Template_Test, test_stack) {
   EXPECT_EQ(ele, tmp);
 }
 
-// strut mem memory align test
+// strut member align test
 template<typename T1, typename T2, typename T3>
 struct t_s {
   T1 a;
@@ -48,30 +48,28 @@ TEST(Align_Test, struct_test) {
   EXPECT_EQ(sizeof(s_2), 24);
 }
 
-/* function template test : 
-     this is function template override, 
-     function template local specialization properly looks like ->
-
-     template<typename T1>
-     int func<int,T1>(int, T1){
-     }
-*/
+// function template test  
 template<typename T1, typename T2>
-T1 func(T1 a, T2 b){
+T1 func(T1 a, T2 b) {
   a = b;
   return a; 
 }
 template<typename T1>
-int func(int a, T1 b){
+int func(int a, T1 b) {
   a = static_cast<int>(b);
   return a;
 }
-
-TEST(Specialization, override){
+/*  this is function template override, 
+    function template local specialization properly looks like ->
+    template<typename T1>
+    int func<int,T1>(int, T1){
+    }
+*/
+TEST(Specialization, override) {
   double a = 3.14;
   int b = 5;
-  EXPECT_EQ(func(a, 3.15), 3.15);
-  EXPECT_EQ(func(1, 2.5), 2); 
+  EXPECT_EQ(func(a, b), 5.0);
+  EXPECT_EQ(func(b, a), 3); 
 }
 
 // -----------------main-----------------------
