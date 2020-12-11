@@ -21,7 +21,7 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
 add_executable(
-    stack main.cc
+    stack test_main.cc
 )
 
 target_link_libraries(

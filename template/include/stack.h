@@ -9,28 +9,26 @@ class Stack{
     elements.push_back(element);  
   }
 
-  void pop(T& ele){
+  void pop(){
     if(elements.empty()) {
-      std::cerr << "this stack is empty" << std::endl;
+      throw std::out_of_range("stack<>::top(): empty stack!");
       return;
     }
     else {
-      ele = elements.back();
       elements.pop_back();
     }
   }  
 
-  T top(){
+  T top() {
     if(elements.empty()) {
-      std::cerr << "this stack is empty" << std::endl;
-      return;
+      throw std::out_of_range("stack<>::top(): empty stack!");
     }
     else {
-      return elements.pop_back();
+      return elements.back();
     }
   }
 
-  size_t size(){
+  size_t size() {
     return elements.size();
   }
  private:
