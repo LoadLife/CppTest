@@ -1,6 +1,5 @@
 #include <iostream>
 #include "gtest/gtest.h"
-#include "stack.h"
 using namespace std;
 /*---------------------GTest Class Base-----------------------------
 class Template_Test : public ::testing::Test {
@@ -15,18 +14,7 @@ void Template_Test::TearDown() {
 */
 
 //----------------------Test Case------------------------------------
-// 1.stack test 
-TEST(Template_Test, test_stack) {
-  Stack<int> stack;
-  int ele = 3;
-  stack.push(3);
-  int tmp;
-  tmp = stack.top();
-  stack.pop();
-  EXPECT_EQ(ele, tmp);
-}
-
-// 2.strut member align test
+// 1.strut member align test
 /* default align mode
   ①.当前元素偏移量是当前元素大小的整数倍
   ②.整个struct的大小是最大元素的整数倍
@@ -48,7 +36,7 @@ TEST(Align_Test, struct_test) {
   EXPECT_EQ(sizeof(s_2), 24);
 }
 
-// 3.function template test  
+// 2.function template test  
 /* this is function template override, 
   function template local specialization properly looks like ->
   template<typename T1>
@@ -56,36 +44,49 @@ TEST(Align_Test, struct_test) {
   }
 */
 template<typename T1, typename T2>
-T1 func(T1 a, T2 b) {
+T1 test_override(T1 a, T2 b) {
   a = b;
   return a; 
 }
 template<typename T1>
-int func(int a, T1 b) {
+int test_override(int a, T1 b) {
   a = static_cast<int>(b);
   return a;
 }
 TEST(Specialization, override) {
   double a = 3.14;
   int b = 5;
-  EXPECT_EQ(func(a, b), 5.0);
-  EXPECT_EQ(func(b, a), 3); 
+  EXPECT_EQ(test_override(a, b), 5.0);
+  EXPECT_EQ(test_override(b, a), 3); 
 }
 
-// 4.test Non_typed template parameters
+// 3.test Non_typed template parameters
 // default non_typed template value
 template<typename T1, int V1 = 1>
-T1 func_v(T1 a, int b = V1) {
+T1 test_default_value(T1 a, int b = V1) {
   a = a + static_cast<T1>(b);
   return a;
 }
 TEST(Non_typed, default_value) {
   double a = 2.0;
-  EXPECT_EQ(func_v(a), 3.0);
+  EXPECT_EQ(test_default_value(a), 3.0);
 }
 
-// -----------------main-----------------------
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+// 4.Non_typed template paramters must be const integer num, enum or extern pointer,
+// can't be float point now, samples below is not allowed
+/*
+  template <double D>
+  void func(){
+    cout <<　D << endl;
+  }
+*/
+// in msvc_2017 compile internal error
+// extern constexpr char str[] = "hello world";  
+extern const char str[] = "hello world";
+template<const char* c_pointer>
+const char* test_extern_pointer(){
+  return c_pointer;
+} 
+TEST(Non_typed, extern_pointer){
+  EXPECT_EQ(test_extern_pointer<str>(),str);
 }

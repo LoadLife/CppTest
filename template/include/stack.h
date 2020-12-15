@@ -1,3 +1,5 @@
+#ifndef _STACK_H_
+#define _STACK_H_
 #include <vector>
 
 template <typename T>
@@ -34,3 +36,4 @@ class Stack{
  private:
   std::vector<T> elements;
 };
+#endif
