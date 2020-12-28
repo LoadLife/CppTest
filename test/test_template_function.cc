@@ -91,5 +91,3 @@ const char* test_extern_pointer(){
 TEST(Non_typed, extern_pointer){
   EXPECT_EQ(test_extern_pointer<str>(),str);
 }
-
-// 5.

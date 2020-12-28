@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "stack.h"
-// 1.stack test 
+using namespace std;
+// 1.stack<int> test 
 TEST(Template_Test, test_stack) {
   Stack<int> stack;
   int ele = 3;
@@ -9,4 +10,14 @@ TEST(Template_Test, test_stack) {
   tmp = stack.top();
   stack.pop();
   EXPECT_EQ(ele, tmp);
+}
+
+// 2.stack<string> specialization test
+TEST(Template_Test, test_stack_string) {
+  try {
+    Stack<string> stack;
+    stack.pop();
+  } catch(const exception& e) {
+    cout << e.what() <<endl;
+  }
 }
