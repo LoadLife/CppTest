@@ -14,8 +14,9 @@ void Template_Test::TearDown() {
 */
 
 //----------------------Test Case------------------------------------
-// 1.strut member align test
-/* default align mode
+
+/* 1.strut member align test
+  default align mode
   ①.当前元素偏移量是当前元素大小的整数倍
   ②.整个struct的大小是最大元素的整数倍
   ③.当struct中有其它struct时候，内部struct的偏移量必须为其中最大元素大小的整数倍
@@ -36,8 +37,8 @@ TEST(Align_Test, struct_test) {
   EXPECT_EQ(sizeof(s_2), 24);
 }
 
-// 2.function template test  
-/* this is function template override, 
+/* 2.function template test  
+  this is function template override, 
   function template local specialization properly looks like ->
   template<typename T1>
   int func<T1>(int, T1){
@@ -72,14 +73,14 @@ TEST(Non_typed, default_value) {
   EXPECT_EQ(test_default_value(a), 3.0);
 }
 
-// 4.Non_typed template paramters must be const integer num, enum or extern pointer,
-// can't be float point now, samples below is not allowed
-/*
+/* 4.Non_typed template paramters must be const integer num, enum or extern pointer,
+   can't be float point now, samples below is not allowed
+/*-------------------------------------------------------------
   template <double D>
   void func(){
     cout <<　D << endl;
   }
-*/
+---------------------------------------------------------------*/
 // in msvc_2017 compile internal error
 // extern constexpr char str[] = "hello world";  
 extern const char str[] = "hello world";
@@ -90,3 +91,5 @@ const char* test_extern_pointer(){
 TEST(Non_typed, extern_pointer){
   EXPECT_EQ(test_extern_pointer<str>(),str);
 }
+
+// 5.

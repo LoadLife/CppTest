@@ -8,7 +8,7 @@ if(result)
     message(FATAL_ERROR "CMake step for configure google-test failed: ${result}")
 endif()
 
-#build
+#build-download(the time to real download)
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download
     RESULT_VARIABLE result)
@@ -20,14 +20,14 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
+file(GLOB TEST_SRC *.cc)
 add_executable(
-    unit_tests main.cc test_template_class.cc test_template_function.cc
+    unit_tests ${TEST_SRC} ${TEMPLATE_SRC}
 )
-
 target_link_libraries(
     unit_tests  gtest_main
 )
 
 target_include_directories(
-    unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/template/include
+    unit_tests PUBLIC ${CMAKE_SOURCE_DIR}/template/include
 )
