@@ -85,9 +85,17 @@ TEST(Non_typed, default_value) {
 // extern constexpr char str[] = "hello world";  
 extern const char str[] = "hello world";
 template<const char* c_pointer>
-const char* test_extern_pointer(){
+const char* test_extern_pointer() {
   return c_pointer;
 } 
-TEST(Non_typed, extern_pointer){
+TEST(Non_typed, extern_pointer) {
   EXPECT_EQ(test_extern_pointer<str>(),str);
+}
+
+/* 5.template test decay 
+  "hello":char const[6] | "world":char const[5], they two are differnt types
+*/
+template<typename T>
+T const& test_max(T const& a, T const& b) {
+
 }
