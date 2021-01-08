@@ -95,11 +95,22 @@ TEST(T_Function, non_typed_extern_pointer) {
 }
 
 /* 5.template test decay 
-  "hello":char const[6] | "world":char const[5], they two are differnt types
+  {"hello":char const[5] | "world!":char const[6]} they two are differnt types
+   when non referenced type T, array will decay to a pointer
 */
 template<typename T>
-T const& test_max(T const& a, T const& b) {
-
+T const& test_max_ref(T const& a, T const& b) {
+  return a > b ? a : b;
+}
+template<typename T>
+T test_max(T a, T b) {
+  return a > b ? a : b;
+}
+TEST(T_Function, array_decay_to_pointer) {
+  const char a[] = "hello";
+  const char b[] = "world!";
+  // test_max_ref(a, b);  compile error
+  ASSERT_EQ(test_max(a, b), b);
 }
 
 // 6.template's template param [not support in cpp98]
