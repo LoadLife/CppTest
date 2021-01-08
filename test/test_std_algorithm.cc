@@ -5,7 +5,7 @@
 #include "gtest/gtest.h"
 
 // std::all_of
-TEST(Algorithm_Test, all_of) {
+TEST(Algorithm, all_of) {
   std::array<int, 4> test_arr{1, 3, 5, 7};
   if (std::all_of(test_arr.begin(), test_arr.end(), [](int i){ return i%2; })) {
     std::cout << "all are odd number" << std::endl;
@@ -13,7 +13,7 @@ TEST(Algorithm_Test, all_of) {
 }
 
 // std::any_of
-TEST(Algorithm_Test, any_of) {
+TEST(Algorithm, any_of) {
   std::array<int,4> test_arr{2, 4, 6, 8};
   if (!std::any_of(test_arr.begin(), test_arr.end(), [](int i){ return i%2; })) {
     std::cout << "all are even number" << std::endl;
@@ -26,7 +26,7 @@ TEST(Algorithm_Test, any_of) {
 }
 
 // std::none_of
-TEST(Algorithm_Test, none_of) {
+TEST(Algorithm, none_of) {
   std::array<int,4> test_arr{2, 4, 6, 8};
   if (std::none_of(test_arr.begin(), test_arr.end(), [](int i){ return i%2; })) {
     std::cout << "all are even number" << std::endl;
@@ -162,6 +162,7 @@ TEST(Algorithm, serach) {
   iter = std::search(src.begin(), src.end(), ref.begin(), ref.end(), [](int i, int j){ return j - i <= 2; }); 
   ASSERT_EQ(iter, src.begin());
 }
+
 // std::serach_n
 TEST(Algorithm, serach_n) {
   std::array<int, 8> src{1, 2, 3, 4, 4, 6, 7, 8};
@@ -170,3 +171,4 @@ TEST(Algorithm, serach_n) {
   iter = std::search_n(src.begin(), src.end(), 2, 4, [](int i, int j){ return j - i <= 3; });
   ASSERT_EQ(iter, src.begin());
 }
+

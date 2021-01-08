@@ -1,4 +1,6 @@
 #include <iostream>
+#include <deque>
+#include <memory>
 #include "gtest/gtest.h"
 using namespace std;
 /*---------------------GTest Class Base-----------------------------
@@ -27,7 +29,7 @@ struct t_s {
   T2 b;
   T3 c;
 };
-TEST(Align_Test, struct_test) {
+TEST(T_Function, align_struct_test) {
   t_s<char, int, double> s_1;
   EXPECT_NE(sizeof(s_1), 13); 
   EXPECT_EQ(sizeof(s_1), 16);
@@ -54,7 +56,7 @@ int test_override(int a, T1 b) {
   a = static_cast<int>(b);
   return a;
 }
-TEST(Specialization, override) {
+TEST(T_Function, specialization_override) {
   double a = 3.14;
   int b = 5;
   EXPECT_EQ(test_override(a, b), 5.0);
@@ -68,7 +70,7 @@ T1 test_default_value(T1 a, int b = V1) {
   a = a + static_cast<T1>(b);
   return a;
 }
-TEST(Non_typed, default_value) {
+TEST(T_Function, non_typed_default_value) {
   double a = 2.0;
   EXPECT_EQ(test_default_value(a), 3.0);
 }
@@ -88,7 +90,7 @@ template<const char* c_pointer>
 const char* test_extern_pointer() {
   return c_pointer;
 } 
-TEST(Non_typed, extern_pointer) {
+TEST(T_Function, non_typed_extern_pointer) {
   EXPECT_EQ(test_extern_pointer<str>(),str);
 }
 
@@ -98,4 +100,15 @@ TEST(Non_typed, extern_pointer) {
 template<typename T>
 T const& test_max(T const& a, T const& b) {
 
+}
+
+// 6.template's template param [not support in cpp98]
+template<typename T, template<typename T2, typename T3 = std::allocator<T2>>
+                     class CONTAINER>
+void test_template_template_param() {
+  CONTAINER<T> test_container;
+  ASSERT_EQ(test_container.size(),0);
+}
+TEST(T_Function,function_template_template_param){
+  test_template_template_param<int,std::vector>();
 }
