@@ -120,6 +120,7 @@ void test_template_template_param() {
   CONTAINER<T> test_container;
   ASSERT_EQ(test_container.size(),0);
 }
-TEST(T_Function,function_template_template_param){
+TEST(T_Function, function_template_template_param) {
   test_template_template_param<int,std::vector>();
 }
+
