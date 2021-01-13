@@ -1,6 +1,7 @@
-#include <iostream>
 #include <deque>
+#include <iostream>
 #include <memory>
+#include <type_traits>
 #include "gtest/gtest.h"
 using namespace std;
 /* GTest Class Base
@@ -123,3 +124,15 @@ TEST(T_Function, function_template_template_param) {
   test_template_template_param<int, std::vector>();
 }
 
+/* 7.reference cuttle(引用折叠)
+  X& &、[X& &&]、 X&& & → X&
+  [x&& &&] -> x&& */
+template <typename T1, typename T2 = int&>
+bool test_cuttle(T1&& a) { 
+  return std::is_same<T1,T2>::value;
+}
+TEST(T_Function, reference_cuttle) {
+  int a =3; int& b = a;
+  auto ret = test_cuttle(b);
+  EXPECT_EQ(ret, true);
+}

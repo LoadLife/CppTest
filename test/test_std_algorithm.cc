@@ -173,7 +173,7 @@ TEST(Algorithm, serach_n) {
   ASSERT_EQ(iter, src.begin());
 }
 
-// std::copy && std::copy_n [Copy range of elements] copy_n(cpp 11)
+// std::copy && std::copy_n [Copy range of elements]copy_n(cpp 11)
 TEST(Algorithm, copy_and_copy_n) {
   std::array<int, 4> src{1,2,3,4};
   std::vector<int> dst(4); // vector must be assigned enough size
@@ -211,7 +211,7 @@ TEST(Algorithm, copy_backward) {
   ASSERT_EQ(iter, dst.begin());
 }
 
-// std::move [Move range of elements] (cpp 11)
+// std::move [Move range of elements](cpp 11)
 TEST(Algorithm, move) {
   std::vector<int> src{1, 2, 3, 4};
   std::array<int, 4> dst;
