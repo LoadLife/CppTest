@@ -3,7 +3,7 @@
 #include <memory>
 #include "gtest/gtest.h"
 using namespace std;
-/*---------------------GTest Class Base-----------------------------
+/* GTest Class Base
 class Template_Test : public ::testing::Test {
 protected:
     virtual void SetUp();
@@ -12,8 +12,8 @@ protected:
 void Template_Test::SetUp() {
 }
 void Template_Test::TearDown() {
-}
-*/
+} */
+
 
 //----------------------Test Case------------------------------------
 
@@ -44,8 +44,7 @@ TEST(T_Function, align_struct_test) {
   function template local specialization properly looks like ->
   template<typename T1>
   int func<T1>(int, T1){
-  }
-*/
+  } */
 template<typename T1, typename T2>
 T1 test_override(T1 a, T2 b) {
   a = b;
@@ -76,16 +75,17 @@ TEST(T_Function, non_typed_default_value) {
 }
 
 /* 4.Non_typed template paramters must be const integer num, enum or extern pointer,
-   can't be float point now, samples below is not allowed
-/*-------------------------------------------------------------
+   can't be float point now, samples below is not allowed */
+/* -----------------------
   template <double D>
   void func(){
     cout <<　D << endl;
   }
----------------------------------------------------------------*/
-// in msvc_2017 compile internal error
-// extern constexpr char str[] = "hello world";  
-extern const char str[] = "hello world";
+  ------------------------ */ 
+/* in msvc_2017 compile internal error
+   extern `constexpr` char str[] = "hello world"; */
+// if this is extern const char* str = "hello world" , can't be compiled[to be cleared]
+extern const char str[] = "hello world"; 
 template<const char* c_pointer>
 const char* test_extern_pointer() {
   return c_pointer;
@@ -96,8 +96,7 @@ TEST(T_Function, non_typed_extern_pointer) {
 
 /* 5.template test decay 
   {"hello":char const[5] | "world!":char const[6]} they two are differnt types
-   when non referenced type T, array will decay to a pointer
-*/
+   when non referenced type T, array will decay to a pointer */
 template<typename T>
 T const& test_max_ref(T const& a, T const& b) {
   return a > b ? a : b;
@@ -118,9 +117,9 @@ template<typename T, template<typename T2, typename T3 = std::allocator<T2>>
                      class CONTAINER>
 void test_template_template_param() {
   CONTAINER<T> test_container;
-  ASSERT_EQ(test_container.size(),0);
+  ASSERT_EQ(test_container.size(), 0);
 }
 TEST(T_Function, function_template_template_param) {
-  test_template_template_param<int,std::vector>();
+  test_template_template_param<int, std::vector>();
 }
 

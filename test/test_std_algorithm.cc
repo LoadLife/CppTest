@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <array>
 #include <iostream>
+#include <memory>
 #include <random>
 #include "gtest/gtest.h"
 
-// std::all_of [Test condition on all elements in range]
+// std::all_of [Test condition on all elements in range](cpp 11)
 TEST(Algorithm, all_of) {
   std::array<int, 4> test_arr{1, 3, 5, 7};
   if (std::all_of(test_arr.begin(), test_arr.end(), [](int i){ return i%2; })) {
@@ -12,7 +13,7 @@ TEST(Algorithm, all_of) {
   }
 }
 
-// std::any_of [Test if any element in range fulfills condition]
+// std::any_of [Test if any element in range fulfills condition](cpp 11)
 TEST(Algorithm, any_of) {
   std::array<int, 4> test_arr{2, 4, 6, 8};
   if (!std::any_of(test_arr.begin(), test_arr.end(), [](int i){ return i%2; })) {
@@ -25,7 +26,7 @@ TEST(Algorithm, any_of) {
   }
 }
 
-// std::none_of [Test if no elements fulfill condition]
+// std::none_of [Test if no elements fulfill condition](cpp 11)
 TEST(Algorithm, none_of) {
   std::array<int, 4> test_arr{2, 4, 6, 8};
   if (std::none_of(test_arr.begin(), test_arr.end(), [](int i){ return i%2; })) {
@@ -55,7 +56,7 @@ TEST(Algorithm, find) {
     test_vec.push_back(distrib(e));
   }
   auto iter = std::find(test_vec.begin(), test_vec.end(), test_vec[20]);
-  std::cout << "find *iter:" << *iter << std::endl;
+  std::cout << "find *iter : " << *iter << std::endl;
   ASSERT_EQ(*iter, test_vec[iter - test_vec.begin()]);
   iter = std::find(test_vec.begin(), test_vec.end(), 21);
   ASSERT_EQ(iter, test_vec.end());
@@ -78,7 +79,7 @@ TEST(Algorithm, find_if) {
   }
 }
 
-// std::find_if_not [Find element in range (negative condition)]
+// std::find_if_not [Find element in range (negative condition)](cpp 11)
 TEST(Algorithm, find_if_not) {
   std::default_random_engine e;
   std::uniform_int_distribution<unsigned> distrib(0, 100);
@@ -145,7 +146,7 @@ TEST(Algorithm, mismatch_and_equal) {
   ASSERT_TRUE(std::equal(src.begin(), src.end(), ref.begin(), [](int i, int j){ return j - i <= 2; }));
 }
 
-// std::is_permutation [compare if the two containers' element are all same even they are in different order]
+// std::is_permutation [compare if the two containers' element are all same even they are in different order](cpp 11)
 TEST(Algorithm, is_permutation) {
   std::array<int, 4> src{1, 2, 3, 4};
   std::array<int, 4> ref{2, 1, 3, 4};
@@ -172,7 +173,7 @@ TEST(Algorithm, serach_n) {
   ASSERT_EQ(iter, src.begin());
 }
 
-// std::copy && std::copy_n [Copy range of elements]
+// std::copy && std::copy_n [Copy range of elements] copy_n(cpp 11)
 TEST(Algorithm, copy_and_copy_n) {
   std::array<int, 4> src{1,2,3,4};
   std::vector<int> dst(4); // vector must be assigned enough size
@@ -188,7 +189,7 @@ TEST(Algorithm, copy_and_copy_n) {
   ASSERT_EQ(*(iter - 1), 2);
 }
 
-// std::copy_if [Copy certain elements of range]
+// std::copy_if [Copy certain elements of range](cpp 11)
 TEST(Algorithm, copy_if) {
   std::array<int, 4> src{1,2,3,4};
   std::vector<int> dst(2); // vector must be assigned enough size
@@ -209,3 +210,47 @@ TEST(Algorithm, copy_backward) {
   }
   ASSERT_EQ(iter, dst.begin());
 }
+
+// std::move [Move range of elements] (cpp 11)
+TEST(Algorithm, move) {
+  std::vector<int> src{1, 2, 3, 4};
+  std::array<int, 4> dst;
+  auto iter = std::move(src.begin(), src.end(), dst.begin());
+  for(auto i = 1; i != 4; i++) {
+    ASSERT_EQ(i, dst.at(i - 1));
+  }
+  ASSERT_EQ(iter, dst.end());
+  ASSERT_EQ(src.size(), dst.size());
+  for(auto i = 1; i != 4; i++) {
+    ASSERT_EQ(i, dst.at(i - 1));
+  }
+  std::cout << "after `std::move`, src is an unspecified but valid state" << std::endl;
+}
+
+// std::move_backward [Move range of elements backward](cpp 11)
+TEST(Algorithm, move_backward) {
+  std::vector<int> src{1, 2, 3, 4};
+  std::array<int, 4> dst;
+  auto iter = std::move_backward(src.begin(), src.end(), dst.end());
+  for(auto i = 1; i != 4; i++) {
+    ASSERT_EQ(i, dst.at(i - 1));
+  }
+  ASSERT_EQ(iter, dst.begin());
+  ASSERT_EQ(src.size(), dst.size());
+  for(auto i = 1; i != 4; i++) {
+    ASSERT_EQ(i, dst.at(i - 1));
+  }
+  std::cout << "after `std::move`, src is an unspecified but valid state" << std::endl;
+}
+
+// std::swap<T&, T&> [Exchange values of two objects]
+TEST(Algorithm, swap) {
+  std::array<int, 4> src{1, 2, 3, 4};
+  auto tmp_src = src;
+  std::array<int, 4> dst{5, 6, 7, 8};
+  auto tmp_dst = dst;
+  std::swap(src, dst);
+  EXPECT_EQ(src, tmp_dst);
+  EXPECT_EQ(dst, tmp_src);
+}
+
