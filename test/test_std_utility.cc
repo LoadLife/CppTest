@@ -1,6 +1,7 @@
 #include <utility>
 #include "gtest/gtest.h"
-// 2.test std::move [utility]
+
+// 1.test std::move [utility]
 TEST(Utility, move) {
   // [sec1]: for the basic type, the move constructor's behaviour is unexplicit
   int a = 3;
