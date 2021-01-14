@@ -195,7 +195,7 @@ TEST(Algorithm, copy_if) {
   std::vector<int> dst(2); // vector must be assigned enough size
   auto iter = std::copy_if(src.begin(), src.end(), dst.begin(), [](int i){ return i%2; });
   for(auto& i : dst){
-    ASSERT_EQ(i%2 , 1);
+    ASSERT_EQ(i % 2 , 1);
   }
   ASSERT_EQ(iter, dst.end());
 }
@@ -250,7 +250,75 @@ TEST(Algorithm, swap) {
   std::array<int, 4> dst{5, 6, 7, 8};
   auto tmp_dst = dst;
   std::swap(src, dst);
-  EXPECT_EQ(src, tmp_dst);
-  EXPECT_EQ(dst, tmp_src);
+  ASSERT_EQ(src, tmp_dst);
+  ASSERT_EQ(dst, tmp_src);
 }
 
+// std::swap_ranges [Exchange values of two ranges]
+TEST(Algorithm, swap_ranges) {
+  std::array<int, 4> src{1, 2, 3, 4};
+  auto tmp_src = src;
+  std::vector<int> dst(4);
+  std::swap_ranges(src.begin(), src.end(), dst.begin());
+  for(auto i : src) {
+    ASSERT_EQ(i, 0);
+  }
+  for(auto i = 0; i != 4; i++) {
+    ASSERT_EQ(tmp_src.at(i), dst.at(i));
+  }
+}
+
+// std::iter_swap [Exchange values of objects pointed to by two iterators]
+TEST(Algorithm, iter_swap) {
+  std::array<int, 4> src{1, 2, 3, 4};
+  std::array<int, 4> src_cmp{3, 4, 1, 2};
+  std::iter_swap(src.begin(), src.begin() + 2);
+  std::iter_swap(src.begin() + 1, src.begin() + 3);
+  ASSERT_EQ(src, src_cmp);
+}
+
+// std::transform [Transform range]
+TEST(Algorithm, transform) {  
+  std::array<int, 4> src{1, 2, 3, 4};
+  std::vector<int> dst(4);
+  //unary op
+  std::transform(src.begin(), src.end(), dst.begin(), [](int i){ return i * 2; });
+  for(auto i = 0; i != 4; i++) {
+    ASSERT_EQ(dst.at(i), src.at(i) * 2);
+  }
+  //binary op
+  std::vector<int> dst_binary(4);
+  std::transform(src.begin(), src.end(), dst.begin(), dst_binary.begin(), std::plus<int>());
+  for(auto i = 0; i != 4; i++) {
+    ASSERT_EQ(dst_binary.at(i), src.at(i) * 3);
+  }
+}
+
+// std::replace && std::replace_if[Replace value in range]
+TEST(Algorithm, replace_and_replace_if) {
+  std::array<int, 4> src{256, 512, 1024, 1024};
+  std::replace(src.begin(), src.end() - 1, 1024, 2048);
+  ASSERT_EQ(src.at(2), 2048);
+  ASSERT_EQ(src.at(3), 1024);
+
+  std::replace_if(src.begin(), src.end(), [](int i){ return i != 1024; }, 1024);
+  for(auto i : src) {
+    ASSERT_EQ(i, 1024);
+  }
+}
+
+// std::replace_copy && std::replace_copy_if[Copy range replacing value]
+TEST(Algorithm, repalce_copy_and_replace_copy_if) {
+  std::array<int, 4> src{256, 512, 1024, 2048};
+  std::array<int, 4> src_tmp = src;
+  std::vector<int> dst(4);
+  std::replace_copy(src.begin(), src.end(), dst.begin(), 256, 512);
+  ASSERT_EQ(dst.at(0), 512);
+  ASSERT_EQ(src, src_tmp);
+
+  std::replace_copy_if(src.begin(), src.end(), dst.begin(), [](int i){ return i != 1024; }, 1024);
+  for(auto i : dst) {
+    ASSERT_EQ(i, 1024);  
+  }
+  ASSERT_EQ(src, src_tmp);
+}

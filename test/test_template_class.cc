@@ -9,7 +9,7 @@ TEST(T_Class, test_stack) {
   int tmp;
   tmp = stack.top();
   stack.pop();
-  EXPECT_EQ(ele, tmp);
+  ASSERT_EQ(ele, tmp);
 }
 
 // 2.stack<string> specialization test

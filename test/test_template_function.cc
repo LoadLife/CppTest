@@ -32,12 +32,12 @@ struct t_s {
 };
 TEST(T_Function, align_struct_test) {
   t_s<char, int, double> s_1;
-  EXPECT_NE(sizeof(s_1), 13); 
-  EXPECT_EQ(sizeof(s_1), 16);
+  ASSERT_NE(sizeof(s_1), 13); 
+  ASSERT_EQ(sizeof(s_1), 16);
 
   t_s<int, double, char> s_2;
-  EXPECT_NE(sizeof(s_2), 13);
-  EXPECT_EQ(sizeof(s_2), 24);
+  ASSERT_NE(sizeof(s_2), 13);
+  ASSERT_EQ(sizeof(s_2), 24);
 }
 
 /* 2.function template test  
@@ -59,8 +59,8 @@ int test_override(int a, T1 b) {
 TEST(T_Function, specialization_override) {
   double a = 3.14;
   int b = 5;
-  EXPECT_EQ(test_override(a, b), 5.0);
-  EXPECT_EQ(test_override(b, a), 3); 
+  ASSERT_EQ(test_override(a, b), 5.0);
+  ASSERT_EQ(test_override(b, a), 3); 
 }
 
 // 3.test Non_typed template parameters
@@ -72,7 +72,7 @@ T1 test_default_value(T1 a, int b = V1) {
 }
 TEST(T_Function, non_typed_default_value) {
   double a = 2.0;
-  EXPECT_EQ(test_default_value(a), 3.0);
+  ASSERT_EQ(test_default_value(a), 3.0);
 }
 
 /* 4.Non_typed template paramters must be const integer num, enum or extern pointer,
@@ -92,7 +92,7 @@ const char* test_extern_pointer() {
   return c_pointer;
 } 
 TEST(T_Function, non_typed_extern_pointer) {
-  EXPECT_EQ(test_extern_pointer<str>(),str);
+  ASSERT_EQ(test_extern_pointer<str>(),str);
 }
 
 /* 5.template test decay 
@@ -134,5 +134,5 @@ bool test_cuttle(T1&& a) {
 TEST(T_Function, reference_cuttle) {
   int a =3; int& b = a;
   auto ret = test_cuttle(b);
-  EXPECT_EQ(ret, true);
+  ASSERT_EQ(ret, true);
 }

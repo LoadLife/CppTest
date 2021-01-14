@@ -24,5 +24,5 @@ TEST(Miscellaneous, decltype) {
   int a[] = {1, 2, 3};
   decltype(*a) b = a[0]; // decltype(*a) return int&
   a[0] = 4;
-  EXPECT_EQ(b, 4);
+  ASSERT_EQ(b, 4);
 }
