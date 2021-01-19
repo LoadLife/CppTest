@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <thread>
 #include "gtest/gtest.h"
 
 // std::all_of [Test condition on all elements in range](cpp 11)
@@ -282,19 +283,21 @@ TEST(Algorithm, transform) {
   std::array<int, 4> src{1, 2, 3, 4};
   std::vector<int> dst(4);
   //unary op
-  std::transform(src.begin(), src.end(), dst.begin(), [](int i){ return i * 2; });
+  auto iter = std::transform(src.begin(), src.end(), dst.begin(), [](int i){ return i * 2; });
+  ASSERT_EQ(iter, dst.end());
   for(auto i = 0; i != 4; i++) {
     ASSERT_EQ(dst.at(i), src.at(i) * 2);
   }
   //binary op
   std::vector<int> dst_binary(4);
-  std::transform(src.begin(), src.end(), dst.begin(), dst_binary.begin(), std::plus<int>());
+  iter = std::transform(src.begin(), src.end(), dst.begin(), dst_binary.begin(), std::plus<int>());
+  ASSERT_EQ(iter, dst_binary.end());
   for(auto i = 0; i != 4; i++) {
     ASSERT_EQ(dst_binary.at(i), src.at(i) * 3);
   }
 }
 
-// std::replace && std::replace_if[Replace value in range]
+// std::replace && std::replace_if [Replace value in range]
 TEST(Algorithm, replace_and_replace_if) {
   std::array<int, 4> src{256, 512, 1024, 1024};
   std::replace(src.begin(), src.end() - 1, 1024, 2048);
@@ -307,7 +310,7 @@ TEST(Algorithm, replace_and_replace_if) {
   }
 }
 
-// std::replace_copy && std::replace_copy_if[Copy range replacing value]
+// std::replace_copy && std::replace_copy_if [Copy range replacing value]
 TEST(Algorithm, repalce_copy_and_replace_copy_if) {
   std::array<int, 4> src{256, 512, 1024, 2048};
   std::array<int, 4> src_tmp = src;
@@ -321,4 +324,40 @@ TEST(Algorithm, repalce_copy_and_replace_copy_if) {
     ASSERT_EQ(i, 1024);  
   }
   ASSERT_EQ(src, src_tmp);
+}
+
+// std::fill && std::fill_n [Fill range with value]
+TEST(Algorithm, fill_and_fill_n) {
+  std::array<int, 4> arr;
+  std::fill(arr.begin(), arr.end(), 3);
+  for(auto i : arr) {
+    ASSERT_EQ(i, 3);
+  }
+  std::fill_n(arr.begin(), 2, 1); 
+  ASSERT_EQ(arr.at(0), 1);
+  ASSERT_EQ(arr.at(3), 3);
+}
+
+// std::generate && std::generate_n [Generate values for range with function]
+TEST(Algorithm, generate_and_generate_n) {
+  std::array<int, 4> arr;
+  std::generate(arr.begin(), arr.end(), [](){ return std::rand(); });
+  std::cout << "std::generated: ";
+  for(auto i : arr) {
+    std::cout << i <<", ";
+  }  
+  std::cout << std::endl;
+  std::generate_n(arr.begin(), 2, [](){ return std::rand(); });
+}
+
+// std::remove && remove_if [Remove value from range]
+TEST(Algorithm, remove) {
+  std::vector<int> arr{1, 1, 2, 3, 4};
+  auto removed_value = 1;
+  auto left_num = std::count_if(arr.begin(), arr.end(), [&removed_value](const int& i){ return i != removed_value; });
+  auto iter = std::remove(arr.begin(), arr.end(), removed_value); // this function has a nodiscard property
+  // now arr:[2, 3, 4, 3, 4], real format is [left1, left2, ..leftn, ?, ?, ..?], only the left values make sense 
+  ASSERT_EQ(iter, arr.begin() + left_num); 
+  // the container's size doesn't change
+  ASSERT_EQ(arr.size(), 5);
 }
