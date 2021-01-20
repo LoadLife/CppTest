@@ -360,4 +360,29 @@ TEST(Algorithm, remove) {
   ASSERT_EQ(iter, arr.begin() + left_num); 
   // the container's size doesn't change
   ASSERT_EQ(arr.size(), 5);
+
+  removed_value = 3;
+  iter = std::remove_if(arr.begin(), arr.end(), [&removed_value](const int& i){ return i == removed_value; });
+  // now arr:[2, 4, 4, 3, 4], [o, o, o, x, x]
+  ASSERT_EQ(iter, arr.begin() + 3);
+}
+
+// std::remove_copy && remove_copy_if [Copy range removing value]
+TEST(Algorithm, remove_copy_and_remove_copy_if) {
+  std::array<int, 5> src{7, 2, 7, 2, 2};
+  std::vector<int> dst(src.size());
+  auto left_num  = std::count_if(src.begin(), src.end(), [](int& i){ return i != 7;});
+  auto iter = std::remove_copy(src.begin(), src.end(), dst.begin(), 7);
+  ASSERT_EQ(iter, dst.begin() + left_num);
+  for(auto i = 0; i != left_num; i++) {
+    ASSERT_EQ(dst.at(i), 2);
+  }
+
+  dst.clear();
+  dst.resize(src.size());
+  iter = std::remove_copy_if(src.begin(), src.end(), dst.begin(), [](int& i){ return i == 7; });
+  ASSERT_EQ(iter, dst.begin() + left_num);
+  for(auto i = 0; i != left_num; i++) {
+    ASSERT_EQ(dst.at(i), 2);
+  }
 }
