@@ -1,4 +1,5 @@
 #include <utility>
+#include <array>
 #include "gtest/gtest.h"
 
 // 1.test std::move [utility]
@@ -28,4 +29,15 @@ TEST(Utility, move) {
   auto u_b(std::move(u_a)); 
   ASSERT_NE(&u_a, &u_b);
   ASSERT_EQ(u_a.get(), nullptr); 
+}
+
+// 2.test std::swap<T&, T&> [Exchange values of two objects]
+TEST(Utility, swap) {
+  std::array<int, 4> src{1, 2, 3, 4};
+  auto tmp_src = src;
+  std::array<int, 4> dst{5, 6, 7, 8};
+  auto tmp_dst = dst;
+  std::swap(src, dst);
+  ASSERT_EQ(src, tmp_dst);
+  ASSERT_EQ(dst, tmp_src);
 }

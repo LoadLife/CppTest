@@ -5,7 +5,7 @@
 #include <random>
 #include <thread>
 #include "gtest/gtest.h"
-
+ 
 // std::all_of [Test condition on all elements in range](cpp 11)
 TEST(Algorithm, all_of) {
   std::array<int, 4> test_arr{1, 3, 5, 7};
@@ -244,17 +244,6 @@ TEST(Algorithm, move_backward) {
   std::cout << "after `std::move`, src is an unspecified but valid state" << std::endl;
 }
 
-// std::swap<T&, T&> [Exchange values of two objects]
-TEST(Algorithm, swap) {
-  std::array<int, 4> src{1, 2, 3, 4};
-  auto tmp_src = src;
-  std::array<int, 4> dst{5, 6, 7, 8};
-  auto tmp_dst = dst;
-  std::swap(src, dst);
-  ASSERT_EQ(src, tmp_dst);
-  ASSERT_EQ(dst, tmp_src);
-}
-
 // std::swap_ranges [Exchange values of two ranges]
 TEST(Algorithm, swap_ranges) {
   std::array<int, 4> src{1, 2, 3, 4};
@@ -350,7 +339,7 @@ TEST(Algorithm, generate_and_generate_n) {
   std::generate_n(arr.begin(), 2, [](){ return std::rand(); });
 }
 
-// std::remove && remove_if [Remove value from range]
+// std::remove && std::remove_if [Remove value from range]
 TEST(Algorithm, remove) {
   std::vector<int> arr{1, 1, 2, 3, 4};
   auto removed_value = 1;
@@ -367,7 +356,7 @@ TEST(Algorithm, remove) {
   ASSERT_EQ(iter, arr.begin() + 3);
 }
 
-// std::remove_copy && remove_copy_if [Copy range removing value]
+// std::remove_copy && std::remove_copy_if [Copy range removing value]
 TEST(Algorithm, remove_copy_and_remove_copy_if) {
   std::array<int, 5> src{7, 2, 7, 2, 2};
   std::vector<int> dst(src.size());
@@ -385,4 +374,56 @@ TEST(Algorithm, remove_copy_and_remove_copy_if) {
   for(auto i = 0; i != left_num; i++) {
     ASSERT_EQ(dst.at(i), 2);
   }
+}
+
+// std::unique && std::unique_copy [Remove `consecutive` duplicates in range]
+TEST(Algorithm, unique_and_unqiue_copy) {
+  std::array<int,4> arr{1, 2, 1, 3};
+  auto arry_tmp = arr;
+  auto iter = std::unique(arr.begin(), arr.end());
+  ASSERT_EQ(iter, arr.end());
+  ASSERT_EQ(arr, arry_tmp);
+  arr.swap(std::array<int,4>{1, 1, 1, 3});
+  iter = std::unique(arr.begin(), arr.end()); // arr:[1, 3, 1, 3] nodiscard
+  ASSERT_EQ(iter, arr.begin() + 2);
+
+  std::array<int, 6> arr2{1, 1, 1, 2, 1, 3};
+  std::vector<int> result(4);
+  auto iter2 = std::unique_copy(arr2.begin(), arr2.end(), result.begin()); // result: [1, 2, 1, 3]
+  ASSERT_EQ(iter2, result.end());
+}
+
+// std::reverse && std::reverse_copy [Reverse range]
+TEST(Algorithm, reverse_and_reverse_copy) {
+  std::array<int,6> arr{1, 2, 3, 4, 5, 6};
+  auto arr_tmp = arr;
+  std::reverse(arr.begin(), arr.end());
+  for(auto i = 0; i != arr.size() / 2; i++) {
+    ASSERT_EQ(arr_tmp[i], arr[arr.size() - i - 1]);
+  }
+  
+  std::array<int, 6> dst{};
+  auto iter = std::reverse_copy(arr.begin(), arr.end(), dst.begin());
+  ASSERT_EQ(iter, dst.end());
+  ASSERT_EQ(arr_tmp, dst);
+}
+
+// std::rotate && std::rotate_copy [Rotate left the elements in range]
+TEST(Algorithm, rotate_and_rotate_copy) {
+  std::array<int, 8> arr{1, 2, 3, 4, 5, 6, 7, 8};
+  auto tmp_arr = arr;
+  auto iter = std::rotate(arr.begin(), arr.begin() + 3, arr.end());
+  ASSERT_EQ(iter, arr.begin() + 5);
+
+  std::array<int, 8> dst{};
+  iter = std::rotate_copy(arr.begin(), arr.begin() + 3, arr.end(), dst.begin());
+  ASSERT_EQ(iter, dst.end());
+}
+
+// std::random_shuffle(cpp98) && std::shuffle [Randomly rearrange elements in range(using generator)](cpp11)
+TEST(Algorithm, shuffle) {
+  std::array<int, 6> arr{1, 2, 3, 4, 5, 6};
+  auto tmp_arr = arr;
+  std::shuffle(arr.begin(), arr.end(), std::default_random_engine(100));
+  ASSERT_TRUE(std::is_permutation(arr.begin(), arr.end(), tmp_arr.begin()));
 }
