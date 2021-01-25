@@ -427,3 +427,52 @@ TEST(Algorithm, shuffle) {
   std::shuffle(arr.begin(), arr.end(), std::default_random_engine(100));
   ASSERT_TRUE(std::is_permutation(arr.begin(), arr.end(), tmp_arr.begin()));
 }
+
+// std::is_partitioned [Test whether range is partitioned]
+TEST(Algorithm, is_partitioned) {
+  std::array<int, 4> arr{1, 2, 3, 4};
+  auto ret = std::is_partitioned(arr.begin(), arr.end(),[](int& i) { return i % 2; });
+  ASSERT_EQ(ret, false);
+  for(auto &i : arr) {
+    i = i * 2 + 1; 
+  }
+  ret = std::is_partitioned(arr.begin(), arr.end(),[](int& i) { return i % 2; });
+  ASSERT_EQ(ret, true);
+}
+
+// std::partition [Partition range in two]
+// std::stable_partition [Partition range in two (always use internal tmp buffer)]
+TEST(Algorithm, partition) {
+  std::array<int, 6> arr{1, 2, 3, 4, 5, 6};
+  auto iter = std::partition(arr.begin(), arr.end(), [](int& i) { return i % 2; });
+  for(auto i = arr.begin(); i != iter; i++) {
+    ASSERT_TRUE(*i % 2);
+  }
+
+  for(auto i = iter; i != arr.end(); i++) {
+    ASSERT_FALSE(*i % 2);
+  }
+}
+
+// std::partition_copy [Partition range into two](cpp11)
+TEST(Algorithm, partition_copy) {
+  std::array<int, 6> arr{1, 2, 3, 4, 5, 6};
+  std::array<int, 3> dst_first, dst_second;
+  auto iter = std::partition_copy(arr.begin(), arr.end(), dst_first.begin(), dst_second.begin(), [](int& i) { return i % 2; });
+  for(auto& i : dst_first) {
+    ASSERT_TRUE(i % 2);
+  }
+
+  for(auto& i : dst_second) {
+    ASSERT_FALSE(i % 2);
+  }
+}
+
+// std::partition_point
+TEST(Algorithm, partition_point) {
+  std::array<int,6> arr{1, 2, 3, 4, 5, 6};
+  std::partition(arr.begin(), arr.end(), [](int& i){ return i % 2; });
+  auto iter = std::partition_point(arr.begin(), arr.end(), [](int& i){ return i % 2;});
+  ASSERT_FALSE((*iter) % 2);
+  ASSERT_TRUE(*(iter - 1) % 2);
+}
