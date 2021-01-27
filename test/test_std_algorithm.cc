@@ -468,11 +468,73 @@ TEST(Algorithm, partition_copy) {
   }
 }
 
-// std::partition_point
+// std::partition_point [Get partition point]
 TEST(Algorithm, partition_point) {
-  std::array<int,6> arr{1, 2, 3, 4, 5, 6};
+  std::array<int, 6> arr{1, 2, 3, 4, 5, 6};
+  // partition first
   std::partition(arr.begin(), arr.end(), [](int& i){ return i % 2; });
   auto iter = std::partition_point(arr.begin(), arr.end(), [](int& i){ return i % 2;});
   ASSERT_FALSE((*iter) % 2);
   ASSERT_TRUE(*(iter - 1) % 2);
+}
+
+// std::sort && stable_sort [Sort elements in range]
+TEST(Algorithm, sort_and_stable_sort) {
+  std::array<int, 6> arr{3, 1, 2, 4, 6, 5};
+  std::sort(arr.begin(), arr.end());
+  for(auto i = 0; i != arr.size(); i++) {
+    ASSERT_EQ(arr.at(i), i + 1);
+  }
+
+  std::stable_sort(arr.begin(), arr.end(), [](int i, int j){ return i > j; });
+  for(auto i = 0; i != arr.size(); i++){
+    ASSERT_EQ(arr.at(i), 6 - i);
+  }
+}
+
+// std:: partial_sort && partial_sort_copy [Partially sort elements in range]
+TEST(Algorithm, partial_sort_and_copy) {
+  std::array<int, 6> arr{3, 1, 2, 6, 4, 5};
+  auto tmp_arr = arr;
+  std::partial_sort(arr.begin(), arr.begin() + 3, arr.end());
+  for(auto i = 0; i != arr.size(); i++) {
+    if(i < 3)
+      ASSERT_EQ(arr.at(i), i + 1);
+    else 
+      ASSERT_NE(arr.at(i), i + 1);
+  }
+  
+  std::array<int, 6> dst_arr;
+  auto iter = std::partial_sort_copy(tmp_arr.begin(), tmp_arr.begin() + 3, dst_arr.begin(), dst_arr.end());
+  for(auto i = 0; i != 3; i++) {
+    ASSERT_EQ(dst_arr.at(i), i + 1);
+  }
+}
+
+// std::is_sorted [Check whether range is sorted]
+TEST(Algorithm, is_sorted) {
+  std::array<int, 6> arr{1, 5, 3, 7, 9, 11};
+  auto isSorted = std::is_sorted(arr.begin(), arr.end());
+  ASSERT_EQ(isSorted, false);
+  
+  isSorted = std::is_sorted(arr.begin(), arr.end(), [](int i, int j) { return (i + j) % 2; });
+  ASSERT_EQ(isSorted, true);
+}
+
+// std::nth_element [Sort element in range]
+TEST(Algorithm, nth_element) {
+  std::array<int, 9> arr;
+  for(auto i = 0; i != 9; i++) {
+    arr[i] = i;
+  }
+  std::shuffle(arr.begin(), arr.end(), std::default_random_engine(100));
+  std::nth_element(arr.begin(), arr.begin() + 4, arr.end());
+  for(auto i = 0; i != 4; i++) {
+    ASSERT_LT(arr.at(i), arr.at(4));
+  }
+  for(auto i = 5; i != 9; i++) {
+    ASSERT_GT(arr.at(i), arr.at(4));
+  }
+  //*nth is the element nth element at sorted seq
+  ASSERT_EQ(*(arr.begin() + 4), 4);
 }
