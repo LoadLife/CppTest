@@ -535,6 +535,39 @@ TEST(Algorithm, nth_element) {
   for(auto i = 5; i != 9; i++) {
     ASSERT_GT(arr.at(i), arr.at(4));
   }
-  //*nth is the element nth element at sorted seq
+  // *nth is the element nth element at sorted seq
   ASSERT_EQ(*(arr.begin() + 4), 4);
+}
+
+// std::lower_bound && std::upper_bound [Return iterator to lower bound / upper bound]
+TEST(Algorithm, lower_bound_and_upper_bound) {
+  std::array<int, 8> arr{1, 2, 3, 3, 4, 4, 5, 6};
+  auto iter = std::lower_bound(arr.begin(), arr.end(), 3);
+  // first greater_equal than
+  ASSERT_EQ(iter - arr.begin(), 2);
+  // first greater than 
+  iter = std::upper_bound(arr.begin(), arr.end(), 3);
+  ASSERT_EQ(iter - arr.begin(), 4);
+}
+
+// std::equal_range && std::binary_search [equal_range || Test if value exists in sorted sequence]
+TEST(Algorithm, equal_range) {
+  std::array<int, 9> arr{1, 2, 3, 3, 4, 4, 4, 5, 6};
+  auto iter_pair = std::equal_range(arr.begin(), arr.end(), 4);
+  for(auto iter = iter_pair.first; iter != iter_pair.second; iter++) {
+    ASSERT_EQ(*iter, 4);
+  }
+  auto is_found = std::binary_search(arr.begin(), arr.end(), 6);
+  ASSERT_TRUE(is_found);
+}
+
+// std::merge [Merge sorted ranges]
+TEST(Algorithm, merge) {
+  std::array<int, 3> arr1{2, 1, 3};
+  std::array<int, 4> arr2{4, 1, 3, 2};
+  std::vector<int> vec_dst(7);
+  std::sort(arr1.begin(), arr1.end());
+  std::sort(arr2.begin(), arr2.end());
+  auto iter = std::merge(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), vec_dst.begin());
+  ASSERT_EQ(iter, vec_dst.end());
 }

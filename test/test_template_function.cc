@@ -17,7 +17,6 @@ void Template_Test::TearDown() {
 
 
 //----------------------Test Case------------------------------------
-
 /* 1.strut member align test
   default align mode
   ①.当前元素偏移量是当前元素大小的整数倍
