@@ -569,5 +569,19 @@ TEST(Algorithm, merge) {
   std::sort(arr1.begin(), arr1.end());
   std::sort(arr2.begin(), arr2.end());
   auto iter = std::merge(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), vec_dst.begin());
+  auto sorted = std::is_sorted(vec_dst.begin(), vec_dst.end());
+  ASSERT_TRUE(sorted);
   ASSERT_EQ(iter, vec_dst.end());
 }
+
+// std::inplace_merge [Merge consecutive sorted ranges]
+TEST(Algorithm, inplace_merge) {
+  std::array<int, 7> arr{1, 6, 7, 4, 5, 2, 3};
+  std::shuffle(arr.begin(), arr.end(), std::default_random_engine(100));
+  std::sort(arr.begin(), arr.begin() + 4);
+  std::sort(arr.begin() + 4, arr.end());
+  std::inplace_merge(arr.begin(), arr.begin() + 4, arr.end());
+  for(auto i = 0; i != 7; i++) {
+    ASSERT_EQ(i,arr.at(i) - 1);
+  }
+} 
