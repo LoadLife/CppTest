@@ -585,3 +585,24 @@ TEST(Algorithm, inplace_merge) {
     ASSERT_EQ(i,arr.at(i) - 1);
   }
 } 
+
+// std::includes [Test whether sorted range includes another sorted range]
+TEST(Algorithm, includes) {
+  std::array<int, 5> arr_par{1, 3, 5, 7, 9};
+  std::array<int, 3> arr_chil{2, 4, 6}; 
+  auto ret = std::includes(arr_par.begin(), arr_par.end(), arr_chil.begin(), arr_chil.end());
+  ASSERT_FALSE(ret);
+  arr_chil = {3, 5, 9};
+  ret = std::includes(arr_par.begin(), arr_par.end(), arr_chil.begin(), arr_chil.end());
+  ASSERT_TRUE(ret);
+}
+
+// std::set_union [Union of two sorted ranges]
+TEST(Algorithm, set_union) {
+  std::array<int, 5> arr1{1, 3, 5, 5, 7};
+  std::array<int, 5> arr2{2, 3, 4, 4, 8};
+  std::array<int, 9> dst{};
+  // dst {1, 2, <3>, [4], 4, [5], 5, 7, 8}, not really union
+  auto iter = std::set_union(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), dst.begin());
+  ASSERT_EQ(iter - dst.begin(), dst.size()); 
+}
