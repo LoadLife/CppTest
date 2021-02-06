@@ -602,7 +602,37 @@ TEST(Algorithm, set_union) {
   std::array<int, 5> arr1{1, 3, 5, 5, 7};
   std::array<int, 5> arr2{2, 3, 4, 4, 8};
   std::array<int, 9> dst{};
-  // dst {1, 2, <3>, [4], 4, [5], 5, 7, 8}, not really union
+  // dst {1, 2, <3>, [4], 4, [5], 5, 7, 8}, not unique
   auto iter = std::set_union(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), dst.begin());
   ASSERT_EQ(iter - dst.begin(), dst.size()); 
+}
+
+// std::set_intersection [Intersection of two sorted ranges]
+TEST(Algorithm, set_intersection) {
+  std::array<int, 5> arr1{1, 2, 4, 4, 6};
+  std::array<int, 6> arr2{1, 3, 4, 4, 8, 10};
+  std::array<int, 3> dst{};
+  // dst {1, [4], 4}
+  auto iter = std::set_intersection(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), dst.begin());
+  ASSERT_EQ(iter - dst.begin(), dst.size()); 
+}
+
+// std::set_difference [Difference of two sorted ranges]
+TEST(Algorithm, set_difference) {
+  std::array<int, 5> arr1{1, 2, 3, 3, 5};
+  std::array<int, 5> arr2{1, 3, 4, 4, 5};
+  std::array<int, 2> dst{};
+  // dst {2, 3}, is just the difference value in the arr1, exclusive value in arr2
+  auto iter = std::set_difference(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), dst.begin());
+  ASSERT_EQ(iter - dst.begin(), dst.size());
+}
+
+//std::set_symmetric_difference [Symmetric difference of two sorted ranges]
+TEST(Algorithm, set_symmetric_difference) {
+   std::array<int, 5> arr1{1, 2, 3, 3, 5};
+  std::array<int, 5> arr2{1, 3, 4, 4, 5};
+  std::array<int, 4> dst{};
+  // dst {2, 3, 4, 4}, is just the difference value in the arr1, exclusive value in arr2
+  auto iter = std::set_symmetric_difference(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), dst.begin());
+  ASSERT_EQ(iter - dst.begin(), dst.size());
 }
