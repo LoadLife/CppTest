@@ -627,7 +627,7 @@ TEST(Algorithm, set_difference) {
   ASSERT_EQ(iter - dst.begin(), dst.size());
 }
 
-//std::set_symmetric_difference [Symmetric difference of two sorted ranges]
+// std::set_symmetric_difference [Symmetric difference of two sorted ranges]
 TEST(Algorithm, set_symmetric_difference) {
    std::array<int, 5> arr1{1, 2, 3, 3, 5};
   std::array<int, 5> arr2{1, 3, 4, 4, 5};
@@ -635,4 +635,75 @@ TEST(Algorithm, set_symmetric_difference) {
   // dst {2, 3, 4, 4}, is just the difference value in the arr1, exclusive value in arr2
   auto iter = std::set_symmetric_difference(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), dst.begin());
   ASSERT_EQ(iter - dst.begin(), dst.size());
+}
+
+// std::heap_related 
+TEST(Algorithm, heap_related) {
+  std::vector<int> vec{20,10,30,40,15};
+  // when the lambda, min heap, all the heap api should use related lambda
+  std::make_heap(vec.begin(), vec.end() /*[](int i, int j){ return i > j; }*/);
+  ASSERT_EQ(*vec.begin(), 40);
+
+  std::pop_heap(vec.begin(), vec.end());
+  vec.pop_back();
+  ASSERT_EQ(*vec.begin(), 30);
+
+  vec.push_back(60);
+  std::push_heap(vec.begin(), vec.end());
+  ASSERT_EQ(*vec.begin(), 60);
+
+  vec.push_back(88);
+  auto iter = std::is_heap_until(vec.begin(), vec.end());
+  ASSERT_EQ(iter, vec.end() - 1);
+  std::push_heap(vec.begin(), vec.end());
+
+  // i think its equal to std::sort
+  std::sort_heap(vec.begin(), vec.end());
+  ASSERT_FALSE(std::is_heap(vec.begin(), vec.end()));
+}
+
+// std::algorithm_min_max related api
+TEST(Algorithm, min_max){
+  std::array<int, 8> arr{1, 2, 10, 8, 9, 13, 21, 9};
+
+  ASSERT_EQ(std::min(10, 20), 10);
+  ASSERT_EQ(std::min_element(arr.begin(), arr.end()), arr.begin());
+  
+  ASSERT_EQ(std::max(10, 20), 20);
+  ASSERT_EQ(std::max_element(arr.begin(), arr.end()), arr.end() - 2);
+
+  auto pair = std::minmax({1, 2, 10, 8, 9, 13, 21, 9});
+  ASSERT_EQ(pair, std::make_pair(1,21));
+
+  auto pair_iter = std::minmax_element(arr.begin(), arr.end());
+  ASSERT_EQ(pair_iter.first, arr.begin());
+  ASSERT_EQ(pair_iter.second, arr.end() - 2);
+}
+
+// std::lexicographical_compare [Lexicographical less-than comparison]
+TEST(Algorithm, lexicographical_compare) {
+  std::string str = "ReallyWord?";
+  std::string str2 = "Boring.";
+  
+  auto ret = std::lexicographical_compare(str.begin(), str.end(), str2.begin(), str2.end());
+  ASSERT_EQ(ret, false);
+}
+
+// std::next_permutation && std::prev_permutation
+TEST(Algorithm, permutation) {
+  std::array<int, 3> arr{2, 1, 3};
+  std::sort(arr.begin(), arr.end());
+  do {
+    std::cout << arr.at(0) << ", " << arr.at(1) << ", " << arr.at(2) << std::endl;
+  } while(std::next_permutation(arr.begin(), arr.end()));
+  std::cout << "when do all, now: ";
+  std::cout << arr.at(0) << ", " << arr.at(1) << ", " << arr.at(2) << std::endl;
+
+  // prev_permutation
+  std::reverse(arr.begin(), arr.end());
+  do {
+    std::cout << arr.at(0) << ", " << arr.at(1) << ", " << arr.at(2) << std::endl;
+  } while(std::prev_permutation(arr.begin(), arr.end()));
+  std::cout << "when do all, now: ";
+  std::cout << arr.at(0) << ", " << arr.at(1) << ", " << arr.at(2) << std::endl;
 }
