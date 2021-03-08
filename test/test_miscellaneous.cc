@@ -30,3 +30,11 @@ TEST(Miscellaneous, decltype) {
   a[0] = 4;
   ASSERT_EQ(b, 4);
 }
+
+uint64_t calc_align(uint64_t n, uint64_t align) {
+  return ((n + align -1) & (~(align - 1)));
+}
+// TEST_ALIGN
+TEST(Miscellaneous, align) {
+  std::cout << calc_align(17,4) << std::endl;
+}
