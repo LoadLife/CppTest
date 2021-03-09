@@ -128,10 +128,10 @@ TEST(T_Function, function_template_template_param) {
   [x&& &&] -> x&& */
 template <typename T1, typename T2 = int&>
 bool test_cuttle(T1&& a) { 
-  return std::is_same<T1,T2>::value;
+  return std::is_same<T1, T2>::value;
 }
 TEST(T_Function, reference_cuttle) {
-  int a =3; int& b = a;
+  int a = 3; int& b = a;
   auto ret = test_cuttle(b);
   ASSERT_EQ(ret, true);
 }
