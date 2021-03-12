@@ -6,7 +6,7 @@
 #include <iostream>
 #include "gtest/gtest.h"
 
-// 1.a simple thread realization, copy from zhihu
+// a simple thread realization, copy from zhihu
 class fixed_thread_pool {
  public:
   explicit fixed_thread_pool(size_t thread_count)
@@ -15,7 +15,7 @@ class fixed_thread_pool {
       std::thread([data = data_] {
        std::unique_lock<std::mutex> lk(data->mtx_);
        for(;;){
-         if(!data->tasks_.empty()){
+         if(!data->tasks_.empty()) {
            auto current = std::move(data->tasks_.front());
            data->tasks_.pop();
            lk.unlock();
@@ -60,11 +60,14 @@ class fixed_thread_pool {
   };
   std::shared_ptr<data> data_;
 };
+// 1.test thread_pool
 TEST(Thread, pool) {
   fixed_thread_pool pool(3);
-  auto func = [](){
-    std::cout << "hello world" << std::endl;
+  auto main_id = std::this_thread::get_id();
+  auto func = [main_id](){
+    ASSERT_NE(main_id, std::this_thread::get_id());
   };
   pool.execute(func);
-
+  pool.execute(func);
+  pool.execute(func);
 }

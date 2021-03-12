@@ -60,3 +60,21 @@ TEST(Miscellaneous, bind) {
   bind_func(local);
   std::cout << local << std::endl;
 }
+
+struct bit_struct {
+  uint32_t first_1 : 1;
+  uint32_t second_8 : 8;
+  uint32_t third_4 : 4;
+  uint32_t fourth_10 : 10;
+  uint32_t fifth_9 : 9;
+};
+// test bit_struct
+TEST(Miscellaneous, bit_struct) {
+  ASSERT_EQ(sizeof(bit_struct), sizeof(uint32_t));
+  bit_struct s;
+  s.first_1 = 2;
+  // spill memory
+  ASSERT_EQ(s.first_1, 0);
+  s.second_8 = 8;
+  ASSERT_EQ(s.second_8, 8);
+}
