@@ -54,6 +54,7 @@ TEST(Miscellaneous, bind) {
   auto func = [](int& tmp) {
       tmp = 3;
     };
+
   auto bind_func = std::bind(func, std::placeholders::_1);
   int local = 5;
   bind_func(local);

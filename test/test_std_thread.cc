@@ -46,7 +46,7 @@ class fixed_thread_pool {
   void execute(F&& task) {
     {
       std::lock_guard<std::mutex> lk(data_->mtx_);
-      data_->tasks_.emplace(std::forward<f>(task));
+      data_->tasks_.emplace(std::forward<F>(task));
     }
     data_->cond_.notify_one();
   }
@@ -60,7 +60,11 @@ class fixed_thread_pool {
   };
   std::shared_ptr<data> data_;
 };
-
 TEST(Thread, pool) {
+  fixed_thread_pool pool(3);
+  auto func = [](){
+    std::cout << "hello world" << std::endl;
+  };
+  pool.execute(func);
 
 }
