@@ -17,7 +17,7 @@ void Template_Test::TearDown() {
 
 
 //----------------------Test Case------------------------------------
-/* 1.strut member align test
+/* strut member align test
   default align mode
   ①.当前元素偏移量是当前元素大小的整数倍
   ②.整个struct的大小是最大元素的整数倍
@@ -39,7 +39,7 @@ TEST(T_Function, align_struct_test) {
   ASSERT_EQ(sizeof(s_2), 24);
 }
 
-/* 2.function template test  
+/* function template test  
   this is function template override, 
   function template local specialization properly looks like ->
   template<typename T1>
@@ -62,7 +62,7 @@ TEST(T_Function, specialization_override) {
   ASSERT_EQ(test_override(b, a), 3); 
 }
 
-// 3.test Non_typed template parameters
+// test Non_typed template parameters
 // default non_typed template value
 template<typename T1, int V1 = 1>
 T1 test_default_value(T1 a, int b = V1) {
@@ -74,7 +74,7 @@ TEST(T_Function, non_typed_default_value) {
   ASSERT_EQ(test_default_value(a), 3.0);
 }
 
-/* 4.Non_typed template paramters must be const integer num, enum or extern pointer,
+/* Non_typed template paramters must be const integer num, enum or extern pointer,
    can't be float point now, samples below is not allowed */
 /* -----------------------
   template <double D>
@@ -94,7 +94,7 @@ TEST(T_Function, non_typed_extern_pointer) {
   ASSERT_EQ(test_extern_pointer<str>(),str);
 }
 
-/* 5.template test decay 
+/* template test decay 
   {"hello":char const[5] | "world!":char const[6]} they two are differnt types
    when non referenced type T, array will decay to a pointer */
 template<typename T>
@@ -112,7 +112,7 @@ TEST(T_Function, array_decay_to_pointer) {
   ASSERT_EQ(test_max(a, b), b);
 }
 
-// 6.template's template param [not support in cpp98]
+// template's template param [not support in cpp98]
 template<typename T, template<typename T2, typename T3 = std::allocator<T2>>
                      class CONTAINER>
 void test_template_template_param() {
@@ -123,7 +123,7 @@ TEST(T_Function, function_template_template_param) {
   test_template_template_param<int, std::vector>();
 }
 
-/* 7.reference cuttle(引用折叠)
+/* reference cuttle(引用折叠)
   X& &、[X& &&]、 X&& & → X&
   [x&& &&] -> x&& */
 template <typename T1, typename T2 = int&>

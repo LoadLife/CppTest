@@ -7,7 +7,7 @@
  1.when function alloc memory, may throw exception.
  ----------------------------------------- */
 
-// 1.test constexpr
+// test constexpr
 constexpr unsigned fibonacci(unsigned i) {
   return ( i <= 1u ) ? i : (fibonacci(i - 1) + fibonacci(i - 2));
 }
@@ -23,7 +23,7 @@ TEST(Miscellaneous, const_expr) {
   // std::array<unsigned, fibonacci(d(e)) test_arr; 
 }
 
-// 2.test decltype
+// test decltype
 TEST(Miscellaneous, decltype) {
   int a[] = {1, 2, 3};
   // decltype(*a) return int&
@@ -32,7 +32,7 @@ TEST(Miscellaneous, decltype) {
   ASSERT_EQ(b, 4);
 }
 
-// 3.test align
+// test align
 uint64_t calc_align(uint64_t n, uint64_t align) {
   return ((n + align -1) & (~(align - 1)));
 }
@@ -61,6 +61,7 @@ TEST(Miscellaneous, bind) {
   std::cout << local << std::endl;
 }
 
+// test bit_struct
 struct bit_struct {
   uint32_t first_1 : 1;
   uint32_t second_8 : 8;
@@ -68,7 +69,6 @@ struct bit_struct {
   uint32_t fourth_10 : 10;
   uint32_t fifth_9 : 9;
 };
-// test bit_struct
 TEST(Miscellaneous, bit_struct) {
   ASSERT_EQ(sizeof(bit_struct), sizeof(uint32_t));
   bit_struct s;

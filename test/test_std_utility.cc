@@ -2,7 +2,7 @@
 #include <array>
 #include "gtest/gtest.h"
 
-// 1.test std::move [utility]
+// test std::move [utility]
 TEST(Utility, move) {
   // [sec1]: for the basic type, the move constructor's behaviour is unexplicit
   int a = 3;
@@ -31,7 +31,7 @@ TEST(Utility, move) {
   ASSERT_EQ(u_a.get(), nullptr); 
 }
 
-// 2.test std::swap<T&, T&> [Exchange values of two objects]
+// test std::swap<T&, T&> [Exchange values of two objects]
 TEST(Utility, swap) {
   std::array<int, 4> src{1, 2, 3, 4};
   auto tmp_src = src;

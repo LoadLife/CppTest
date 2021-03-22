@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "stack.h"
 using namespace std;
-// 1.stack<int> test 
+// stack<int> test 
 TEST(T_Class, test_stack) {
   Stack<int> stack;
   int ele = 3;
@@ -12,7 +12,7 @@ TEST(T_Class, test_stack) {
   ASSERT_EQ(ele, tmp);
 }
 
-// 2.stack<string> specialization test
+// stack<string> specialization test
 TEST(T_Class, test_stack_string) {
   try {
     Stack<string> stack;
