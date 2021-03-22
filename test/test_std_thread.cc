@@ -64,10 +64,23 @@ class fixed_thread_pool {
 TEST(Thread, pool) {
   fixed_thread_pool pool(3);
   auto main_id = std::this_thread::get_id();
-  auto func = [main_id](){
-    ASSERT_NE(main_id, std::this_thread::get_id());
-  };
+  auto func = [main_id]() {
+      ASSERT_NE(main_id, std::this_thread::get_id());
+    };
+
+  int local = 0x01;
+  auto func_with_param = [&local](int& param, bool param_is_ref) {
+      if(param_is_ref)
+        ASSERT_EQ(&local, &param);
+      else
+        ASSERT_NE(&local, &param); 
+    };
+
+  auto bind_ref_func = std::bind(func_with_param, std::ref(local), true);
+  auto bind_func = std::bind(func_with_param, local, false);
+
   pool.execute(func);
   pool.execute(func);
-  pool.execute(func);
+  pool.execute(bind_ref_func);
+  pool.execute(bind_func);
 }
