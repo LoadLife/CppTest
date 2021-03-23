@@ -8,7 +8,7 @@
 #include <thread>
 #include "gtest/gtest.h"
 
-// a simple thread realization, copy from zhihu
+// a fixed_thread_pool realization, reference from `zhihu`
 class fixed_thread_pool {
  public:
   explicit fixed_thread_pool(size_t thread_count)
@@ -121,22 +121,22 @@ TEST(Thread, hardware_concurrency) {
   for(auto& i : src) {
     i = distrib(e);
   }
-  
+  uint32_t src_size = static_cast<uint32_t>(src.size());
   auto thread_num = std::thread::hardware_concurrency();
-  size_t each_group_eles_num = src.size() / thread_num;
-  size_t extra_num = src.size() % thread_num;
-  if(src.size() < thread_num){
+  uint32_t each_group_eles_num = src_size / thread_num;
+  uint32_t extra_num = src_size % thread_num;
+  if(src_size < thread_num){
     thread_num = 1;
-    each_group_eles_num = src.size();
+    each_group_eles_num = src_size;
     extra_num = 0;
   }
   std::vector<uint32_t> results(thread_num);
-  auto func = [&results](std::vector<uint32_t>::iterator begin, size_t size, uint32_t result_index) {
+  auto func = [&results](std::vector<uint32_t>::iterator begin, uint32_t size, uint32_t result_index) {
     results.at(result_index) = std::accumulate(begin, begin + size, results.at(result_index));
   };
 
   std::vector<std::thread> threads;
-  for(size_t i = 0; i != thread_num; i++) {
+  for(uint32_t i = 0; i != thread_num; i++) {
     if(i != thread_num - 1) 
       threads.emplace_back(func, src.begin() + i * each_group_eles_num, each_group_eles_num, i); 
     else 

@@ -6,17 +6,6 @@
 #include "stack.h"
 #include "gtest/gtest.h"
 using namespace std;
-/* GTest Class Base
-class Template_Test : public ::testing::Test {
-protected:
-    virtual void SetUp();
-    virtual void TearDown();
-};
-void Template_Test::SetUp() {
-}
-void Template_Test::TearDown() {
-} */
-
 
 //----------------------Test Case------------------------------------
 // stack<int> test 
@@ -39,6 +28,7 @@ TEST(T_Class, test_stack_string) {
     cout << e.what() <<endl;
   }
 }
+
 /* strut member align test
   default align mode
   ①.当前元素偏移量是当前元素大小的整数倍
