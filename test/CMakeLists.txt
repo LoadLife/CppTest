@@ -22,8 +22,8 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
 
-file(GLOB TEST_SRC *.cc)
 #generate executable
+file(GLOB TEST_SRC *.cc)
 add_executable(
     unit_tests ${TEST_SRC} ${TEMPLATE_SRC}
 )

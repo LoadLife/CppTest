@@ -1,9 +1,11 @@
-#include <mutex>
 #include <condition_variable>
 #include <functional>
-#include <queue>
-#include <thread>
 #include <iostream>
+#include <mutex>
+#include <numeric>
+#include <queue>
+#include <random>
+#include <thread>
 #include "gtest/gtest.h"
 
 // a simple thread realization, copy from zhihu
@@ -83,4 +85,62 @@ TEST(Thread, pool) {
   pool.execute(func);
   pool.execute(bind_ref_func);
   pool.execute(bind_func);
+}
+
+// test class's internal func
+struct test_internal {
+  test_internal() = default;
+  void equal(int param) {
+    ASSERT_EQ(param, 1);
+  }
+};
+TEST(Thread, internal_func) {
+  test_internal x;
+  int num = 0x1;
+  std::thread t(&test_internal::equal, &x, num);
+  t.join();
+}
+
+// std::for_each to invoke class method
+void do_work(int i) {
+  ASSERT_EQ(i,0x1);
+}
+TEST(Thread, for_each_invoke) {
+  std::vector<std::thread> threads;
+  for(size_t i = 0; i != 4 ; i++) {
+    threads.emplace_back(do_work, 0x1);
+  }
+  std::for_each(threads.begin(), threads.end(), std::mem_fn(&std::thread::join));
+}
+
+// std::thread::hardware_concurrency()
+TEST(Thread, hardware_concurrency) {
+  std::vector<uint32_t> src(100);
+  std::default_random_engine e;
+  std::uniform_int_distribution<unsigned> distrib(0,0xffff);
+  for(auto& i : src){
+    i = distrib(e);
+  }
+  
+  auto thread_num = std::thread::hardware_concurrency();
+  std::vector<uint32_t> results(thread_num);
+  size_t each_group_eles_num = src.size() / thread_num;
+  size_t extra_num = src.size() % thread_num;
+  auto func = [&results](std::vector<uint32_t>::iterator begin, size_t size, uint32_t result_index) {
+    results.at(result_index) = std::accumulate(begin, begin + size, results.at(result_index));
+  };
+
+  std::vector<std::thread> threads;
+  for(size_t i = 0; i != thread_num; i++){
+    if(i != thread_num - 1) 
+      threads.emplace_back(func, src.begin() + i * each_group_eles_num, each_group_eles_num, i); 
+    else 
+      threads.emplace_back(func, src.begin() + i * each_group_eles_num, each_group_eles_num + extra_num, i);
+  }
+  for(auto& i : threads)
+    i.join();
+  uint32_t result = 0, threads_result = 0;
+  threads_result = std::accumulate(results.begin(), results.end(), threads_result);  
+  result = std::accumulate(src.begin(), src.end(), result);
+  ASSERT_EQ(threads_result, result);
 }

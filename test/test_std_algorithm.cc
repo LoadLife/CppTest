@@ -179,7 +179,8 @@ TEST(Algorithm, copy_and_copy_n) {
   std::array<int, 4> src{1,2,3,4};
   std::vector<int> dst(4); // vector must be assigned enough size
   auto iter = std::copy(src.begin(), src.end(), dst.begin());
-  for(auto i = 0; i != src.size(); i++) {
+  auto src_size = src.size();
+  for(auto i = 0; i != src_size; i++) {
     ASSERT_EQ(src.at(i), dst.at(i));
   } 
   ASSERT_EQ(*(iter - 1), 4);
@@ -206,7 +207,8 @@ TEST(Algorithm, copy_backward) {
   std::array<int, 4> src{1,2,3,4};
   std::vector<int> dst(4); // vector must be assigned enough size
   auto iter = std::copy_backward(src.begin(), src.end(), dst.end());
-  for(auto i = 0; i != src.size(); i++){
+  auto src_size = src.size();
+  for(auto i = 0; i != src_size; i++){
     ASSERT_EQ(src.at(i), dst.at(i));
   }
   ASSERT_EQ(iter, dst.begin());
