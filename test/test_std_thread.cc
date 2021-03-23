@@ -118,29 +118,36 @@ TEST(Thread, hardware_concurrency) {
   std::vector<uint32_t> src(100);
   std::default_random_engine e;
   std::uniform_int_distribution<unsigned> distrib(0,0xffff);
-  for(auto& i : src){
+  for(auto& i : src) {
     i = distrib(e);
   }
   
   auto thread_num = std::thread::hardware_concurrency();
-  std::vector<uint32_t> results(thread_num);
   size_t each_group_eles_num = src.size() / thread_num;
   size_t extra_num = src.size() % thread_num;
+  if(src.size() < thread_num){
+    thread_num = 1;
+    each_group_eles_num = src.size();
+    extra_num = 0;
+  }
+  std::vector<uint32_t> results(thread_num);
   auto func = [&results](std::vector<uint32_t>::iterator begin, size_t size, uint32_t result_index) {
     results.at(result_index) = std::accumulate(begin, begin + size, results.at(result_index));
   };
 
   std::vector<std::thread> threads;
-  for(size_t i = 0; i != thread_num; i++){
+  for(size_t i = 0; i != thread_num; i++) {
     if(i != thread_num - 1) 
       threads.emplace_back(func, src.begin() + i * each_group_eles_num, each_group_eles_num, i); 
     else 
       threads.emplace_back(func, src.begin() + i * each_group_eles_num, each_group_eles_num + extra_num, i);
   }
-  for(auto& i : threads)
+  for(auto& i : threads) {
     i.join();
+  }
   uint32_t result = 0, threads_result = 0;
   threads_result = std::accumulate(results.begin(), results.end(), threads_result);  
   result = std::accumulate(src.begin(), src.end(), result);
   ASSERT_EQ(threads_result, result);
 }
+

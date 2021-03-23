@@ -9,11 +9,11 @@
 
  ---
 
- ![Alt pic](../pictures/进程.png)
- ![Alt pic](../pictures/线程.png)
- ![Alt pic](../pictures/纤程.png)
- ![Alt pic](../pictures/管程.png)
- ![Alt pic](../pictures/协程.png)
+ ![Alt pic](./pictures/进程.png)
+ ![Alt pic](./pictures/线程.png)
+ ![Alt pic](./pictures/纤程.png)
+ ![Alt pic](./pictures/管程.png)
+ ![Alt pic](./pictures/协程.png)
 
  ---
 
