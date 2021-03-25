@@ -119,3 +119,26 @@ TEST(Thread, lock_and_adopt_lock) {
   obj x,y;
   visit(x,y);
 }
+
+// test hierarchy lock
+TEST(Thread, hierarchy_lock) {
+  hierarchical_mutex high_lock(10000);
+  hierarchical_mutex middle_lock(5000);
+  hierarchical_mutex low_lock(1000);
+  auto func1 = [&](){
+    std::lock_guard<hierarchical_mutex> lock1(high_lock);
+    std::lock_guard<hierarchical_mutex> lock2(middle_lock);
+    std::cout << "lock success" << std::endl;
+    };
+  auto func2 = [&](){
+    std::lock_guard<hierarchical_mutex> lock1(low_lock);
+    std::lock_guard<hierarchical_mutex> lock2(high_lock);
+    };
+
+  try {
+    func1();
+    func2();
+  } catch(std::logic_error err) {
+    std::cout << err.what() << std::endl;
+  }
+}

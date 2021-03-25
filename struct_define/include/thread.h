@@ -57,12 +57,12 @@ class fixed_thread_pool {
   std::shared_ptr<data> data_;
 };
 
-// a simple hierarchical_mutex
+// a simple hierarchical_mutex, big->small
 class hierarchical_mutex {
  public:
   explicit hierarchical_mutex(uint64_t value) :
     hierarchy_value(value), 
-    previous_hierarchy_value(0) { }
+    previous_hierarchy_value(0) {}
   
   void lock() {
     check_for_hierarchy_violation();
@@ -82,6 +82,7 @@ class hierarchical_mutex {
     update_hierarchy_value();
     return true;
   }
+  
  private:
   void check_for_hierarchy_violation() {
     if(this_thread_hierarchy_value <= hierarchy_value) {
@@ -98,5 +99,4 @@ class hierarchical_mutex {
   const uint64_t hierarchy_value;
   uint64_t previous_hierarchy_value;
   static thread_local uint64_t this_thread_hierarchy_value;
-  
 };
