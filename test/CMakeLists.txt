@@ -25,11 +25,11 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 #generate executable
 file(GLOB TEST_SRC *.cc)
 add_executable(
-    unit_tests ${TEST_SRC} ${TEMPLATE_SRC}
+    unit_tests ${TEST_SRC} ${STRUCT_SRC}
 )
 target_link_libraries(
     unit_tests  gtest_main
 )
 target_include_directories(
-    unit_tests PUBLIC ${CMAKE_SOURCE_DIR}/template/include
+    unit_tests PUBLIC ${CMAKE_SOURCE_DIR}/struct_define/include
 )

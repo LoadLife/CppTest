@@ -6,63 +6,12 @@
 #include <queue>
 #include <random>
 #include <thread>
+#include "thread.h"
 #include "gtest/gtest.h"
+// initial hierarchy_mutex's static value
+thread_local uint64_t hierarchical_mutex::this_thread_hierarchy_value(UINT64_MAX);
 
-// a fixed_thread_pool realization, reference from `zhihu`
-class fixed_thread_pool {
- public:
-  explicit fixed_thread_pool(size_t thread_count)
-    : data_(std::make_shared<data>()) {
-    for(size_t i = 0; i != thread_count; i++) {
-      std::thread([data = data_] {
-       std::unique_lock<std::mutex> lk(data->mtx_);
-       for(;;){
-         if(!data->tasks_.empty()) {
-           auto current = std::move(data->tasks_.front());
-           data->tasks_.pop();
-           lk.unlock();
-           current();
-           lk.lock();
-         } else if(data->is_shutdown_) {
-           break;
-         } else {
-           data->cond_.wait(lk);
-         }
-       }
-      }).detach();
-    }
-  }
-
-  fixed_thread_pool() = default;
-  fixed_thread_pool(fixed_thread_pool&& ) = default;
-
-  ~fixed_thread_pool() {
-    if((bool)data_) {
-      std::lock_guard<std::mutex> lk(data_->mtx_);
-      data_->is_shutdown_ = true;
-    }
-    data_->cond_.notify_all();
-  }
-
-  template <typename F>
-  void execute(F&& task) {
-    {
-      std::lock_guard<std::mutex> lk(data_->mtx_);
-      data_->tasks_.emplace(std::forward<F>(task));
-    }
-    data_->cond_.notify_one();
-  }
-
- private:
-  struct data {
-    std::mutex mtx_;
-    std::condition_variable cond_;
-    bool is_shutdown_ = false;
-    std::queue<std::function<void()>> tasks_;
-  };
-  std::shared_ptr<data> data_;
-};
-// 1.test thread_pool
+// test thread_pool
 TEST(Thread, pool) {
   fixed_thread_pool pool(3);
   auto main_id = std::this_thread::get_id();
@@ -151,3 +100,22 @@ TEST(Thread, hardware_concurrency) {
   ASSERT_EQ(threads_result, result);
 }
 
+// to avoid dead_lock, use std::lock(...) this case is meaningless, just use the std::lock()
+class obj {
+ public:
+  obj() = default;
+  friend void visit(obj& x, obj& y);
+ private:
+  int32_t value = 1;
+  std::mutex lock;
+};
+void visit(obj& x, obj& y){
+  std::lock(x.lock, y.lock);
+  //in this pos, using std::adopt_lock to let lock_guard get mutex and manage mutex
+  std::lock_guard<std::mutex> xlock(x.lock, std::adopt_lock);
+  std::lock_guard<std::mutex> ylock(y.lock, std::adopt_lock);
+}
+TEST(Thread, lock_and_adopt_lock) {
+  obj x,y;
+  visit(x,y);
+}
