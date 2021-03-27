@@ -1,11 +1,14 @@
 
 ---
 
-· `std::forward<Type>(arg)` : 返回Tpye&& 类型引用，右值引用用于表达式时为左值，此时需要forward转发保持类型
+· `std::forward<Type>(arg)` : 返回Tpye&& 类型引用，右值引用用于表达式时为左值，此时需
+要forward转发保持类型  
+
+· `static` : 成员函数只能访问 static成员变量与其它static成员函数(没有this指针)，但是可以访问构造函数
 
 · 类内包含不支持拷贝操作的成员时候，类的拷贝构造函数，拷贝赋值运算符默认标记为`delete`
 
-· `noexcept`：默认不使用,大部分情况下,你都很难避免bad_alloc的异常,即使这个函数不直接allocate,有可能编译器执行代码时还是需要allocate()。比如最简单的a = b，如果a和b是一个自定义的type，有可能这个type有类似vector、string这些需要allocate的member,那这个赋值语句就可能报错。而且即使这个type现在没有这样的member,以后说不定代码改来改去就加了一个这样的成员,不使用noexcept是最future-proof的。move constructor/assignment operator 如果不会抛出异常,一定用noexcept。如果destructor抛出异常，程序99%会挂掉,用noexcept基本没任何坏处。简单的leaf function,像是int，pointer这类的getter，setter用noexcept,因为不可能出错。
+· `noexcept`：默认不使用,大部分情况下,你都很难避免bad_alloc的异常,即使这个函数不直接allocate,有可能编译器执行代码时还是需要allocate。比如最简单的a = b，如果a和b是一个自定义的type，有可能这个type有类似vector、string这些需要allocate的member,那这个赋值语句就可能报错。而且即使这个type现在没有这样的member,以后说不定代码改来改去就加了一个这样的成员,不使用noexcept是最future-proof的。move constructor/assignment operator 如果不会抛出异常,一定用noexcept。如果destructor抛出异常，程序99%会挂掉,用noexcept基本没任何坏处。简单的leaf function,像是int，pointer这类的getter，setter用noexcept,因为不可能出错
 
 <br>
 

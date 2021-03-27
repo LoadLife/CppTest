@@ -142,3 +142,85 @@ TEST(Thread, hierarchy_lock) {
     std::cout << err.what() << std::endl;
   }
 }
+
+// test std::defer_lock
+TEST(Thread, defer_lock) {
+  std::mutex m_1;
+  std::mutex m_2;
+  // std::defer_lock to defer lock time
+  std::unique_lock<std::mutex> lock_1(m_1, std::defer_lock);
+  std::unique_lock<std::mutex> lock_2(m_2, std::defer_lock);
+  std::lock(lock_1, lock_2);
+  if(lock_1.owns_lock() && lock_2.owns_lock()) {
+    lock_1.unlock();
+    lock_2.unlock();
+  } 
+}
+
+/* std::once_flag std::call_once
+  object's init may occupy lots of time,
+  defer object's init until use it.
+*/
+std::shared_ptr<int> shared_int;
+std::once_flag resource_flag;
+void init_resource() {
+  shared_int = std::make_shared<int>(10);
+}
+void do_something() {
+  std::call_once(resource_flag, init_resource);
+  std::cout << *shared_int <<std::endl;
+}
+TEST(Thread, call_once) {
+  std::vector<std::thread> threads;
+  for(uint32_t i = 0; i != 4; i++) {
+    threads.emplace_back(do_something);
+  }
+
+  for(auto& i : threads){
+    i.join();
+  }
+}
+
+/* std::call_once used in class method. in 
+   cpp11 and later, competition in initing 
+   a static variable will not happen, we 
+   need't use call_once to protect getInst-
+   ance()
+*/
+class singleTon {
+ public:
+  static singleTon* getInstance() {
+    static singleTon t;
+    return &t;
+  }
+
+  void init() {
+    std::call_once(init_flag, &singleTon::initInternal, this);
+    ASSERT_EQ(times, 1);
+  }
+ private:
+  void initInternal() {
+    resource = std::make_shared<int>(0xff);
+    times+=1;
+  }
+  singleTon() = default;
+  std::once_flag init_flag;
+  std::shared_ptr<int> resource;
+  static unsigned times;
+};
+unsigned singleTon::times = 0;
+
+void test_singleTon(){
+  auto s = singleTon::getInstance();
+  s->init();
+}
+TEST(Thread, singleTon) {
+  std::vector<std::thread> threads;
+  for(unsigned i = 0; i != 5; i++){
+    threads.emplace_back(test_singleTon);
+  }
+
+  for(auto& i : threads){
+    i.join();
+  }
+}
