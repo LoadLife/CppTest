@@ -226,7 +226,7 @@ TEST(Thread, singleTon) {
   }
 }
 
-// test shared_mutex[cpp17]
+// test std::shared_mutex[cpp17]
 /* when read/write multi operation in different thread, 
    write only low frequently happen. if we use mutex, it
    seems that we are hyperreactive, so we can use newest
@@ -256,20 +256,46 @@ class lovely_girls {
   private:
     std::map<std::string, unsigned> sexy_girls;
     std::shared_mutex mutex;
-
 };
 TEST(Thread, shared_mutex) {
-  lovely_girls* my_girs = new lovely_girls();
-  my_girs->addNewGirl("yifei.liu", 17);
-  my_girs->addNewGirl("xiao.cheng", 20);
-  my_girs->addNewGirl("lisa", 19);
+  lovely_girls* my_girls = new lovely_girls();
+  my_girls->addNewGirl("yifei.liu", 17);
+  my_girls->addNewGirl("xiao.cheng", 20);
+  my_girls->addNewGirl("lisa", 19);
 
   std::vector<std::thread> threads;
-  threads.emplace_back(&lovely_girls::getGirlAge, my_girs, std::string("yifei.liu"));
-  threads.emplace_back(&lovely_girls::addNewGirl, my_girs, std::string("yin.zhu"), 32);
-  threads.emplace_back(&lovely_girls::getGirlAge, my_girs, std::string("xiao.cheng"));
+  threads.emplace_back(&lovely_girls::getGirlAge, my_girls, std::string("yifei.liu"));
+  threads.emplace_back(&lovely_girls::addNewGirl, my_girls, std::string("yin.zhu"), 32);
+  threads.emplace_back(&lovely_girls::getGirlAge, my_girls, std::string("xiao.cheng"));
   
   for(auto& i : threads){
     i.join();
   }
+}
+
+// test std::recursive_mutex
+/* multi lock std::mutex in one thread will cause undefined error,
+   so we use std::recursive_mutex instead, if you lock recursive_mutex 
+   3 times, you should unlock recursive mutex 3 times. but it is rash, 
+   do't advise to use this method
+*/
+class lazy_boy{
+ public:
+  lazy_boy() = default;
+  void playComputer(){
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    eyes.first = 0x2;
+    watchMovie(); 
+  }
+ private:
+  void watchMovie(){
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    eyes.second = 0x2;
+  }
+  std::recursive_mutex mutex;
+  std::pair<unsigned, unsigned> eyes{1, 1};
+};
+TEST(Thread, recursive_mutex) {
+  lazy_boy boy;
+  boy.playComputer();
 }
