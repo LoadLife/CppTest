@@ -78,3 +78,17 @@ TEST(Miscellaneous, bit_struct) {
   s.second_8 = 8;
   ASSERT_EQ(s.second_8, 8);
 }
+
+// i think it's an undefined behavior
+TEST(Miscellaneous, const_pointer) {
+  int* a;
+  const int* b; 
+  {
+    int tmp_a = 3;
+    const int tmp_b = 4;
+    a = &tmp_a;
+    b = &tmp_b;
+  }
+  std::cout << *a << std::endl;
+  std::cout << *b << std::endl;
+}

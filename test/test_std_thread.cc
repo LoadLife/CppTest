@@ -5,6 +5,7 @@
 #include <numeric>
 #include <queue>
 #include <random>
+#include <shared_mutex>
 #include <thread>
 #include "thread.h"
 #include "gtest/gtest.h"
@@ -220,6 +221,54 @@ TEST(Thread, singleTon) {
     threads.emplace_back(test_singleTon);
   }
 
+  for(auto& i : threads){
+    i.join();
+  }
+}
+
+// test shared_mutex[cpp17]
+/* when read/write multi operation in different thread, 
+   write only low frequently happen. if we use mutex, it
+   seems that we are hyperreactive, so we can use newest
+   std::shared_mutex
+*/
+class lovely_girls {
+  public:
+    lovely_girls() = default;
+    unsigned getGirlAge(std::string name) {
+      // std::shared_lock seems a RAII class
+      std::shared_lock<std::shared_mutex> lock(mutex);
+      auto iter = sexy_girls.find(name);
+      if(iter != sexy_girls.end()) {
+        std::cout << iter->first << "'s age is " << iter->second << std::endl; 
+        return iter->second;
+      } else {
+        std::cout << "you don't have such a girl" << std::endl;
+        return UINT32_MAX;
+      } 
+    }
+
+    void addNewGirl(std::string name, unsigned age) {
+      std::lock_guard<std::shared_mutex> lock(mutex);
+      sexy_girls[name] = age;
+    }
+
+  private:
+    std::map<std::string, unsigned> sexy_girls;
+    std::shared_mutex mutex;
+
+};
+TEST(Thread, shared_mutex) {
+  lovely_girls* my_girs = new lovely_girls();
+  my_girs->addNewGirl("yifei.liu", 17);
+  my_girs->addNewGirl("xiao.cheng", 20);
+  my_girs->addNewGirl("lisa", 19);
+
+  std::vector<std::thread> threads;
+  threads.emplace_back(&lovely_girls::getGirlAge, my_girs, std::string("yifei.liu"));
+  threads.emplace_back(&lovely_girls::addNewGirl, my_girs, std::string("yin.zhu"), 32);
+  threads.emplace_back(&lovely_girls::getGirlAge, my_girs, std::string("xiao.cheng"));
+  
   for(auto& i : threads){
     i.join();
   }
