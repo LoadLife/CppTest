@@ -7,6 +7,8 @@
 #include <random>
 #include <shared_mutex>
 #include <thread>
+#include <future>
+#include <chrono>
 #include "thread.h"
 #include "gtest/gtest.h"
 // initial hierarchy_mutex's static value
@@ -298,4 +300,73 @@ class lazy_boy{
 TEST(Thread, recursive_mutex) {
   lazy_boy boy;
   boy.playComputer();
+}
+
+// std::async
+struct async_task {
+  unsigned getTaskNum(){
+    return TaskNum;
+  }
+ private:
+  unsigned TaskNum = 0x1;
+};
+TEST(Thread, async) {
+  async_task task;
+  auto future = std::async(&async_task::getTaskNum, &task);
+  auto task_num = future.get();
+  ASSERT_EQ(task_num, 0x1); 
+
+  auto func = [] {
+      std::cout << "thread : "<< std::this_thread::get_id() << " latter launch" << std::endl;
+      return std::this_thread::get_id();
+    };
+  /* std::launch::deferred or std::launch tag means task will be delayed to launch
+      when invoke future.get() or future.wait(), the async_task run in main thread*/
+  auto future_latter = std::async(std::launch::deferred, func);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  future_latter.wait();
+  std::cout << "thread : " << std::this_thread::get_id() << " first launch" << std::endl;
+  EXPECT_EQ(std::this_thread::get_id(), future_latter.get());
+}
+
+// std::packaged_task return a std::future to get task status
+class packaged_task_test{
+ public:
+  packaged_task_test() = default;
+  template<typename Func>
+  std::future<void> post_task(Func func) {
+    std::packaged_task<void()> task(func);
+    auto result = task.get_future();
+    p_mutex_.lock();
+    tasks_.push(std::move(task));
+    p_mutex_.unlock();
+    return result;
+  }
+
+  void execute_task() {
+    while(tasks_.empty())
+      continue;
+    p_mutex_.lock();
+    auto task = std::move(tasks_.front());
+    tasks_.pop();
+    p_mutex_.unlock();
+    task();
+  }
+  
+ private:
+  std::queue<std::packaged_task<void()>> tasks_;
+  std::mutex p_mutex_;
+};
+
+TEST(Thread, packaged_task) {
+  packaged_task_test test;
+  auto func = []() {
+      std::cout << "hello future" << std::endl;
+    };
+  auto future = std::async(&packaged_task_test::post_task<void()>, &test, func);
+  test.execute_task(); 
+  auto inter_future = future.get();
+  auto ret = inter_future.wait_for(std::chrono::milliseconds(100));
+  ASSERT_EQ(ret, std::future_status::ready);
+  
 }
