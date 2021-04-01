@@ -1,5 +1,8 @@
+#include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <functional>
+#include <future>
 #include <iostream>
 #include <mutex>
 #include <numeric>
@@ -7,8 +10,6 @@
 #include <random>
 #include <shared_mutex>
 #include <thread>
-#include <future>
-#include <chrono>
 #include "thread.h"
 #include "gtest/gtest.h"
 // initial hierarchy_mutex's static value
@@ -329,7 +330,7 @@ TEST(Thread, async) {
   EXPECT_EQ(std::this_thread::get_id(), future_latter.get());
 }
 
-// std::packaged_task return a std::future to get task status
+// std::packaged_task return a std::future to get p_task's return value
 class packaged_task_test{
  public:
   packaged_task_test() = default;
@@ -357,7 +358,6 @@ class packaged_task_test{
   std::queue<std::packaged_task<void()>> tasks_;
   std::mutex p_mutex_;
 };
-
 TEST(Thread, packaged_task) {
   packaged_task_test test;
   auto func = []() {
@@ -368,5 +368,115 @@ TEST(Thread, packaged_task) {
   auto inter_future = future.get();
   auto ret = inter_future.wait_for(std::chrono::milliseconds(100));
   ASSERT_EQ(ret, std::future_status::ready);
+}
+
+// test std::promise : this is just a promise object, not related to a callable
+TEST(Thread, promise) { 
+  std::promise<bool> p;
+  auto func_set = [&p] {
+      p.set_value(true);
+    };
+
+  auto func_get = [&p] {
+      const std::future<bool>& future = p.get_future();
+      future.wait();
+      std::cout << "future get" <<std::endl;
+    };
+
+  std::thread t_1(func_get);
+  std::thread t_2(func_set);
+  t_1.join();
+  t_2.join();
+}
+
+// test std::shared_future, std::future can't be copy, just movable
+TEST(Thread, shared_future) {
+  std::vector<int> resources;
+  auto prepare_func =  [&resources](){
+      resources.resize(10);
+      return true;
+    };  
+  auto future = std::async(prepare_func);
+  std::shared_future s_f(std::move(future));
+
+  auto func_do_work1 = [&s_f](std::vector<int>& re) {
+      auto local_sf = s_f;
+      if(s_f.get()) {
+        for(unsigned i = 0; i != 5; i++) {
+          re.at(2 * i + 1) = 1;
+        }
+      }
+    };
+
+  auto func_do_work2 = [&s_f](std::vector<int>& re) {
+      auto local_sf = s_f;
+      if(s_f.get()) {
+        for(unsigned i = 0; i != 5; i++) {
+          re.at(2 * i) = 0;
+        }
+      }
+    };
+  std::thread t1(func_do_work1, std::ref(resources));
+  std::thread t2(func_do_work2, std::ref(resources));
+  t1.join();
+  t2.join();
+}
+
+// test atomic is_lock_free()
+TEST(Thread, how_to_realize_atomic) {
+  std::atomic_bool b_value;
+  /* this is a lock_free realization, not compiler or library just use lock
+     only `std::atomic_flag` can confirm it is lock_free, other type depend on
+     its compiler an library define */
+  ASSERT_EQ(b_value.is_lock_free(), true);
+  std::atomic_llong l_value;
+  ASSERT_EQ(l_value.is_lock_free(), true);
+}
+
+// test atomic clear() && test_and_set()
+TEST(Thread, test_and_set) {
+  // atomic_flag must be initialed by this
+  std::atomic_flag f = ATOMIC_FLAG_INIT;
+  // destory
+  //f.clear(std::memory_order_release);
+  bool x = f.test_and_set(std::memory_order_acquire);
+  ASSERT_FALSE(x);
+  // test_and_set return previous value
+  x = f.test_and_set(std::memory_order_acquire);
+  ASSERT_TRUE(x);
+} 
+
+// test spinlock
+TEST(Thread, spinlock) {
+  std::vector<int> resource(10);
+  spinlock_mutex s_mutex;
+  auto func_do = [&s_mutex, &resource] {
+      s_mutex.lock();
+      for(unsigned i = 0; i != 10; i++) {
+        resource.at(i) = i;
+      }
+      s_mutex.unlock();
+      return true;
+    };
   
+  std::packaged_task<bool()> task(func_do);
+  auto func_launch = [&task] {
+      task();
+    };
+
+  auto func_read = [&task, &resource, &s_mutex] {
+      auto f = task.get_future();
+      ASSERT_TRUE(f.get());
+      std::lock_guard<spinlock_mutex> lock(s_mutex);
+      for(unsigned i = 0; i != 10; i++){
+        ASSERT_EQ(resource.at(i), i); 
+      }
+      for(auto& i : resource){
+        i *= 2;
+      }
+    };
+  std::thread t1(func_launch);
+  std::thread t2(func_read);
+  t1.join();
+  t2.join();
 }

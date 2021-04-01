@@ -1,3 +1,4 @@
+#include <atomic>
 #include <mutex>
 #include <thread>
 #include <queue>
@@ -100,4 +101,23 @@ class hierarchical_mutex {
   const uint64_t hierarchy_value;
   uint64_t previous_hierarchy_value;
   static thread_local uint64_t this_thread_hierarchy_value;
+};
+
+// a simple spinlock_mutex
+class spinlock_mutex {
+ public:
+  spinlock_mutex() = default;
+  void lock() {
+    while(flag.test_and_set(std::memory_order_acquire));
+  }
+
+  void unlock() {
+    flag.clear(std::memory_order_release);
+  }
+
+  bool try_lock() {
+    return !flag.test_and_set(std::memory_order_acquire);
+  }
+ private:
+  std::atomic_flag flag = ATOMIC_FLAG_INIT;
 };

@@ -27,6 +27,17 @@
  - 定义遍历容器的顺序（比如链表删除操作）
  - 使用层次锁来避免 
 
+**atomic memory order param**
+ - Store操作： `memory_order_relaxed, memory_order_release, memory_order_seq_cst`
+ - Load操作：`memory_order_relaxed, memory_order_consume, memory_order_acquire, memory_order_seq_cst`
+ - Read-modify-write操作：`memory_order_relaxed, memory_order_consume, memory_order_acquire, memory_order_release, memory_order_acq_rel, memory_order_seq_cst`
+
+**自旋锁**  
+***一个线程在获取锁的时候，如果锁已经被其它线程获取，那么这个线程将循环等待，知道锁被获取才退出***  
+ - 优点 : 不会使线程状态发生切换进入阻塞，一直处于用户态，减少了不必要的上下文切换  
+ - 缺点 : 当一个线程持有锁时间过长，其它想要获取锁的线程过多时，会导致cpu占用率极高
+
+
 <br>
 
 ![Alt pic](./pictures/进程.png)
