@@ -460,13 +460,9 @@ TEST(Thread, spinlock) {
     };
   
   std::packaged_task<bool()> task(func_do);
-  auto func_launch = [&task] {
-      task();
-    };
-
-  auto func_read = [&task, &resource, &s_mutex] {
-      auto f = task.get_future();
-      ASSERT_TRUE(f.get());
+  auto future = task.get_future();
+  auto func_read = [&future, &s_mutex, &resource] {
+      ASSERT_TRUE(future.get());
       std::lock_guard<spinlock_mutex> lock(s_mutex);
       for(unsigned i = 0; i != 10; i++){
         ASSERT_EQ(resource.at(i), i); 
@@ -475,7 +471,8 @@ TEST(Thread, spinlock) {
         i *= 2;
       }
     };
-  std::thread t1(func_launch);
+  // std::packaged_task don't allow copy
+  std::thread t1(std::move(task));
   std::thread t2(func_read);
   t1.join();
   t2.join();
