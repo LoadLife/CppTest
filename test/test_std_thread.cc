@@ -1,9 +1,11 @@
 #include <atomic>
+#include <array>
 #include <chrono>
 #include <condition_variable>
 #include <functional>
 #include <future>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <numeric>
 #include <queue>
@@ -422,6 +424,9 @@ TEST(Thread, shared_future) {
   t2.join();
 }
 
+struct no_lock_free {
+  int mem;
+};
 // test atomic is_lock_free()
 TEST(Thread, how_to_realize_atomic) {
   std::atomic_bool b_value;
@@ -431,6 +436,8 @@ TEST(Thread, how_to_realize_atomic) {
   ASSERT_EQ(b_value.is_lock_free(), true);
   std::atomic_llong l_value;
   ASSERT_EQ(l_value.is_lock_free(), true);
+  std::atomic<no_lock_free> x;
+  ASSERT_EQ(x.is_lock_free(), true);
 }
 
 // test atomic clear() && test_and_set()
@@ -476,4 +483,64 @@ TEST(Thread, spinlock) {
   std::thread t2(func_read);
   t1.join();
   t2.join();
+}
+
+// test std::atomic<bool>
+TEST(Thread, atomic_bool) {
+  std::atomic<bool> a_b;
+  auto value = a_b.load(std::memory_order_acquire);
+  a_b.exchange(true);
+  EXPECT_TRUE(value);
+  // support copy form common var, not other atomic
+  a_b = true;
+  bool expected = false;
+  ASSERT_FALSE(a_b.compare_exchange_weak(expected, true)); 
+}
+
+// test std::atomic<T*>
+TEST(Thread, atomic_pointer) {
+  std::array<unsigned, 4> arr{0, 1, 2, 3}; 
+  std::atomic<unsigned*> a_p(arr.data());
+  auto p = a_p.fetch_add(2);
+  ASSERT_EQ(*p, 0);
+  p = a_p.load();
+  ASSERT_EQ(*p, 2); 
+}
+
+// std::atomic_load && std::atomic_store can use for std::shared_ptr
+class atomic_in_shared_ptr {
+ public:
+  void AlterName(std::string name) {
+    auto ptr = std::make_shared<std::string>(name);
+    std::atomic_store(&name_, ptr);
+  }
+
+  void GetName(std::string& name) {
+    if(name_ == nullptr)
+      return;
+    auto ptr = std::atomic_load(&name_);
+    name = *ptr;
+  }
+ private:
+  std::shared_ptr<std::string> name_;
+};
+TEST(Thread, use_for_shared_ptr) {
+  atomic_in_shared_ptr x;
+  auto alter_func = [&x](std::string name) {
+      x.AlterName(name);
+    };
+  auto get_func = [&x](std::string& name) {
+      x.GetName(name); 
+    };
+  std::thread alter_1(alter_func, std::string("junjun"));
+  std::thread alter_2(alter_func, std::string("lulu"));
+  std::thread alter_3(alter_func, std::string("feifei"));
+  
+  std::string returned_name;
+  std::thread get_name(get_func, std::ref(returned_name));
+  alter_3.join();
+  alter_2.join();
+  alter_1.join();
+  get_name.join();
+  std::cout << returned_name << std::endl;
 }
