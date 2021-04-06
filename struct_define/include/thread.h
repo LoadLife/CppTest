@@ -1,3 +1,5 @@
+#ifndef _MY_THREAD_H_
+#define _MY_THREAD_H_
 #include <atomic>
 #include <mutex>
 #include <thread>
@@ -121,3 +123,5 @@ class spinlock_mutex {
  private:
   std::atomic_flag flag = ATOMIC_FLAG_INIT;
 };
+
+#endif

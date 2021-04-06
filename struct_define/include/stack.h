@@ -1,5 +1,5 @@
-#ifndef _STACK_H_
-#define _STACK_H_
+#ifndef _MY_STACK_H_
+#define _MY_STACK_H_
 #include <vector>
 #include <deque>
 
