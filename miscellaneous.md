@@ -1,10 +1,9 @@
 
 ---
+**琐碎点**
+ - `std::forward<Type>(arg)` : 返回Tpye&& 类型引用，右值引用用于表达式时为左值，此时需要forward转发保持类型  
 
- - `std::forward<Type>(arg)` : 返回Tpye&& 类型引用，右值引用用于表达式时为左值，此时需
-要forward转发保持类型  
-
- - `static` : 成员函数只能访问 static成员变量与其它static成员函数(没有this指针)，但是可以访问构造函数
+ - `static` : 成员函数只能访问static成员变量与其它static成员函数(没有this指针)，但是可以访问构造函数
 
  -  类内包含不支持拷贝操作的成员时候，类的拷贝构造函数，拷贝赋值运算符默认标记为`delete`
 
@@ -32,7 +31,12 @@
  - Load操作：`memory_order_relaxed, memory_order_consume, memory_order_acquire, memory_order_seq_cst`
  - Read-modify-write操作：`memory_order_relaxed, memory_order_consume, memory_order_acquire, memory_order_release, memory_order_acq_rel, memory_order_seq_cst`
 
-**std::atomic<UDT>**
+**内存序列选项**
+ - 排序一致序列：`memory_order_seq_cst`
+ - 获取-释放序列：`memory_order_consume, memory_order_acquire, memory_order_acq_rel, memory_order_acq_rel`
+ - 自由序列：`memory_order_relaxed`
+
+**std::atomic\<UDT\>**
  - 必须有拷贝赋值运算符（编译器创建的）
  - 不能有虚函数或者虚基类
  - 所有成员必须支持拷贝赋值运算符

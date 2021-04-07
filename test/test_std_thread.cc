@@ -1,4 +1,3 @@
-#include <atomic>
 #include <array>
 #include <chrono>
 #include <condition_variable>
@@ -6,12 +5,9 @@
 #include <future>
 #include <iostream>
 #include <memory>
-#include <mutex>
 #include <numeric>
-#include <queue>
 #include <random>
 #include <shared_mutex>
-#include <thread>
 #include "thread.h"
 #include "gtest/gtest.h"
 // initial hierarchy_mutex's static value
@@ -543,4 +539,38 @@ TEST(Thread, use_for_shared_ptr) {
   alter_1.join();
   get_name.join();
   std::cout << returned_name << std::endl;
+}
+
+//test std::memory_order_relaxed 
+class relaxed_test {
+ public:
+  void write_x_y() {
+    x_.store(true, std::memory_order_relaxed);
+    y_.store(true, std::memory_order_relaxed);
+  }
+
+  void read_x_y() {
+    while(!y_.load(std::memory_order_relaxed)); 
+    if(x_.load(std::memory_order_relaxed)) {
+      count_+=1;
+    }
+  }
+
+  bool get_result() {
+    return count_.load();
+  }
+ private:
+  std::atomic<bool> x_;
+  std::atomic<bool> y_;
+  std::atomic<unsigned> count_ = 0;
+};
+TEST(Thread, order_relaxed) {
+  relaxed_test x;
+  std::thread write(&relaxed_test::write_x_y, &x);
+  std::thread read(&relaxed_test::read_x_y, &x);
+  write.join();
+  read.join();
+  auto ret = x.get_result();
+  // ret maybe 0, beacuse of instruction's reordering
+  std::cout << ret << std::endl;
 }
