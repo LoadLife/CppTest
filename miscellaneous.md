@@ -32,7 +32,7 @@
  - Read-modify-write操作：`memory_order_relaxed, memory_order_consume, memory_order_acquire, memory_order_release, memory_order_acq_rel, memory_order_seq_cst`
 
 **内存序列选项**
- - 排序一致序列：`memory_order_seq_cst`
+ - 顺序一致序列：`memory_order_seq_cst`
  - 获取-释放序列：`memory_order_consume, memory_order_acquire, memory_order_acq_rel, memory_order_acq_rel`
  - 自由序列：`memory_order_relaxed`
 

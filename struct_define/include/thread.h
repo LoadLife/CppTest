@@ -110,11 +110,9 @@ class spinlock_mutex {
  public:
   spinlock_mutex() = default;
   void lock() {
-    while(flag.test_and_set(std::memory_order_acquire)) {
+    while(flag.test_and_set(std::memory_order_acquire)) 
       // return the time frag 
       std::this_thread::yield();
-    }
-
   }
 
   void unlock() {
@@ -127,5 +125,4 @@ class spinlock_mutex {
  private:
   std::atomic_flag flag = ATOMIC_FLAG_INIT;
 };
-
 #endif

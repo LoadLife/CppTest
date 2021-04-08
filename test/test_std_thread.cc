@@ -574,3 +574,45 @@ TEST(Thread, order_relaxed) {
   // ret maybe 0, beacuse of instruction's reordering
   std::cout << ret << std::endl;
 }
+
+// test std::memory_order_release and std::memory_order_acquire/consume
+class acquire_release_test {
+ public:
+  void set_x_y(unsigned x, bool y) {
+    std::atomic<unsigned> local = y;
+    x_.store(x, std::memory_order_relaxed);
+    y_.store(local, std::memory_order_release);
+  }
+
+  void get_x_y_acquire() {
+    while(!y_.load(std::memory_order_acquire)) {
+      std::this_thread::yield();
+    }
+    if(x_.load(std::memory_order_relaxed))
+      count_.fetch_add(1, std::memory_order_relaxed);
+    std::cout << count_ << std::endl;
+  }
+
+  void get_x_y_consume() {
+    while(!y_.load(std::memory_order_consume)) {
+      std::this_thread::yield();
+    }
+    unsigned x = x_.load(std::memory_order_relaxed);
+    unsigned y = y_.load(std::memory_order_relaxed);
+    std::cout << x <<", " << y << std::endl;
+  }
+ private:
+  std::atomic<unsigned> x_ = 0;
+  std::atomic<bool> y_ = false;
+  std::atomic<unsigned> count_ = 0;
+};
+TEST(Thread, acquire_release) {
+  acquire_release_test x;
+  std::thread t_write(&acquire_release_test::set_x_y, &x, 3, true);
+  std::thread t_acquire(&acquire_release_test::get_x_y_acquire, &x);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
+  std::thread t_consume(&acquire_release_test::get_x_y_consume, &x); 
+  t_write.join();
+  t_acquire.join();
+  t_consume.join();
+}
