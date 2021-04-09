@@ -616,3 +616,29 @@ TEST(Thread, acquire_release) {
   t_acquire.join();
   t_consume.join();
 }
+
+// test atomic_thread_fence
+class fence_test {
+ public:
+  void write_x_then_y() {
+    x = true;
+    std::atomic_thread_fence(std::memory_order_release); 
+    y.store(true, std::memory_order_relaxed); 
+  }
+  
+  void read_y_then_x() {
+    while(!y.load(std::memory_order_relaxed));
+    std::atomic_thread_fence(std::memory_order_acquire);
+    ASSERT_EQ(x,true);
+  }
+ private:
+  bool x = false;
+  std::atomic<bool> y = false;
+};
+TEST(Thread, fence_test) {
+  fence_test x;
+  std::thread t1(&fence_test::write_x_then_y, &x);
+  std::thread t2(&fence_test::read_y_then_x, &x);
+  t1.join();
+  t2.join();
+}

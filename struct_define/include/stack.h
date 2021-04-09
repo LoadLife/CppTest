@@ -1,7 +1,8 @@
 #ifndef _MY_STACK_H_
 #define _MY_STACK_H_
-#include <vector>
 #include <deque>
+#include <vector>
+#include <stdexcept>
 
 template <typename T>
 class Stack {
