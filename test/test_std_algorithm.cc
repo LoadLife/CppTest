@@ -480,6 +480,28 @@ TEST(Algorithm, partition_point) {
   ASSERT_TRUE(*(iter - 1) % 2);
 }
 
+void bubble_sort(std::vector<int>& array) {
+  unsigned arr_size = static_cast<unsigned>(array.size());
+  if(arr_size == 0 || arr_size == 1)
+    return;
+  unsigned begin = 0;
+  while(begin != arr_size - 1) {
+    for(unsigned back = arr_size - 1; back != begin; back--) {
+      if(array.at(back) < array.at(back - 1))
+        std::swap(array.at(back), array.at(back - 1));
+    }
+    begin += 1;
+  }
+}
+TEST(Algorithm, bubble_sort) {
+  std::vector<int> arr{3, 1, 2, 4, 6, 5};
+  bubble_sort(arr);
+  for(auto i:arr) {
+    std::cout << i << ", ";
+  }
+  std::cout << "\n";
+}
+
 // std::sort && stable_sort [Sort elements in range]
 TEST(Algorithm, sort_and_stable_sort) {
   std::array<int, 6> arr{3, 1, 2, 4, 6, 5};

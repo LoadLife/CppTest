@@ -44,7 +44,7 @@
 
  <br>
 
-![Alt pic](./pictures/atomic.png)
+![Alt pic](../pictures/atomic.png)
 
 **自旋锁**  
 ***一个线程在获取锁的时候，如果锁已经被其它线程获取，那么这个线程将循环等待，知道锁被获取才退出***  
@@ -54,10 +54,10 @@
 
 <br>
 
-![Alt pic](./pictures/进程.png)
-![Alt pic](./pictures/线程.png)
-![Alt pic](./pictures/纤程.png)
-![Alt pic](./pictures/管程.png)
-![Alt pic](./pictures/协程.png)
+![Alt pic](../pictures/进程.png)
+![Alt pic](../pictures/线程.png)
+![Alt pic](../pictures/纤程.png)
+![Alt pic](../pictures/管程.png)
+![Alt pic](../pictures/协程.png)
 
 ---
