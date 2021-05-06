@@ -92,3 +92,4 @@ TEST(Miscellaneous, const_pointer) {
   std::cout << *a << std::endl;
   std::cout << *b << std::endl;
 }
+

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <type_traits>
+#include <variant>
 #include "gtest/gtest.h"
 #include "stack.h"
 #include "gtest/gtest.h"
@@ -146,4 +147,20 @@ TEST(T_Function, reference_cuttle) {
   int a = 3; int& b = a;
   auto ret = test_cuttle(b);
   ASSERT_EQ(ret, true);
+}
+
+// test std::visit
+template<class... Ts> struct visitor : Ts... {using Ts::operator()...; };
+template<class... Ts> visitor(Ts...) -> visitor<Ts...>;
+using Var_Type = std::variant<int, double>;
+TEST(template, visit) {
+  int tmp = 0;
+  Var_Type a = 10;
+  std::visit(visitor{
+    // need to accept all variant types
+    [&tmp](int value) { tmp = value; },
+    [](double value) { value = 3.14; } ,
+  }
+  , a);
+  ASSERT_EQ(tmp, std::get<int>(a));
 }
