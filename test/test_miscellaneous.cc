@@ -23,15 +23,6 @@ TEST(Miscellaneous, const_expr) {
   // std::array<unsigned, fibonacci(d(e)) test_arr; 
 }
 
-// test decltype
-TEST(Miscellaneous, decltype) {
-  int a[] = {1, 2, 3};
-  // decltype(*a) return int&
-  decltype(*a) b = a[0]; 
-  a[0] = 4;
-  ASSERT_EQ(b, 4);
-}
-
 // test align
 uint64_t calc_align(uint64_t n, uint64_t align) {
   return ((n + align -1) & (~(align - 1)));

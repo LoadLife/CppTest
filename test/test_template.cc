@@ -164,3 +164,20 @@ TEST(template, visit) {
   , a);
   ASSERT_EQ(tmp, std::get<int>(a));
 }
+
+template<typename Container, typename Index>
+auto return_ele(Container& c, Index i) 
+  ->decltype(c[i])
+{
+  return c[i];
+}
+// test decltype
+TEST(Miscellaneous, decltype) {
+  int a[] = {1, 2, 3};
+  // decltype(*a) return int&
+  decltype(*a) b = a[0]; 
+  a[0] = 4;
+  ASSERT_EQ(b, 4);
+  ASSERT_EQ(&a[1], &return_ele(a, 1));
+
+}
