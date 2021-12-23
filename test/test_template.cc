@@ -172,7 +172,7 @@ auto return_ele(Container& c, Index i)
   return c[i];
 }
 // test decltype
-TEST(Miscellaneous, decltype) {
+TEST(T_Function, decltype) {
   int a[] = {1, 2, 3};
   // decltype(*a) return int&
   decltype(*a) b = a[0]; 
@@ -180,4 +180,35 @@ TEST(Miscellaneous, decltype) {
   ASSERT_EQ(b, 4);
   ASSERT_EQ(&a[1], &return_ele(a, 1));
 
+}
+
+template<typename T>
+void test_array_copy(T arg) {
+  (void)arg;
+  auto ret = std::is_same<T, const char*>();
+  ASSERT_TRUE(ret);
+}
+
+template<typename T>
+void test_array_ref(T& arg) {
+  // T now is const char[len(arg)]
+  (void)arg;
+  auto ret = std::is_same<T, const char[12]>();
+  ASSERT_TRUE(ret);
+}
+// test template array_args
+TEST(T_Function, array_args){
+  const char test_str[] = "hello world";
+  test_array_copy(test_str);
+  test_array_ref(test_str);
+}
+
+template<typename T>
+void test_universal_ref(T&& ref) {
+  std::cout << is_same<T, int&>() << std::endl;
+}
+TEST(T_Function, universal_ref_test) {
+  int a = 4;
+  int&& b = std::move(a);
+  test_universal_ref(b);
 }
