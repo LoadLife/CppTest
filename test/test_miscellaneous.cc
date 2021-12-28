@@ -3,6 +3,7 @@
 #include <utility>
 #include <functional>
 #include "gtest/gtest.h"
+#include "pImpl.h"
 /* ------------------summary--------------
  1.when function alloc memory, may throw exception.
  ----------------------------------------- */
@@ -84,3 +85,7 @@ TEST(Miscellaneous, const_pointer) {
   std::cout << *b << std::endl;
 }
 
+TEST(Miscellaneous, pimpl_unqiue_ptr) {
+  typename pImpl_unique_ptr u_p;
+  u_p.print();
+}
