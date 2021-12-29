@@ -19,15 +19,29 @@ pImpl_unique_ptr& pImpl_unique_ptr::operator=(const pImpl_unique_ptr& tmp) {
   return *this;
 }
 
-
-
 pImpl_unique_ptr::pImpl_unique_ptr(pImpl_unique_ptr&& tmp) = default;
 
 pImpl_unique_ptr& pImpl_unique_ptr::operator=(pImpl_unique_ptr&& tmp) = default;
 
-void pImpl_unique_ptr::print() {
-  std::cout << element_->a << std::endl;
-  std::cout << element_->b << std::endl;
+bool pImpl_unique_ptr::validate() {
+  return true;
 }
 
 pImpl_unique_ptr::~pImpl_unique_ptr() = default;
+
+//==================================================================================
+
+struct pImpl_shared_ptr::element {
+  int a {1};
+  float b {1.0f};
+};
+
+pImpl_shared_ptr::pImpl_shared_ptr():
+  element_(std::make_shared<element>())
+{}
+
+bool pImpl_shared_ptr::validate() {
+  return true;
+}
+
+

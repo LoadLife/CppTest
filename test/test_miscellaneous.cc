@@ -86,6 +86,7 @@ TEST(Miscellaneous, const_pointer) {
 }
 
 TEST(Miscellaneous, pimpl_unqiue_ptr) {
-  typename pImpl_unique_ptr u_p;
-  u_p.print();
+  pImpl_unique_ptr u_p;
+  pImpl_shared_ptr s_p;
+  ASSERT_EQ(u_p.validate(), s_p.validate());
 }
