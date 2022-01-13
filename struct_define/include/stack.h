@@ -62,7 +62,7 @@ T Stack<T>::top() {
 }
 
 template<typename T>
-size_t size() {
+size_t Stack<T>::size() {
   return elements.size();
 }
 

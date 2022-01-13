@@ -385,7 +385,8 @@ TEST(Algorithm, unique_and_unqiue_copy) {
   auto iter = std::unique(arr.begin(), arr.end());
   ASSERT_EQ(iter, arr.end());
   ASSERT_EQ(arr, arry_tmp);
-  arr.swap(std::array<int,4>{1, 1, 1, 3});
+  auto cache = std::array<int,4>{1, 1, 1, 3};
+  arr.swap(cache);
   iter = std::unique(arr.begin(), arr.end()); // arr:[1, 3, 1, 3] nodiscard
   ASSERT_EQ(iter, arr.begin() + 2);
 
