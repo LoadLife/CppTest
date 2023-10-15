@@ -4,6 +4,7 @@
 #include <mutex>
 #include <thread>
 #include <queue>
+#include <functional>
 
 // a fixed_thread_pool realization, reference from `zhihu`
 class fixed_thread_pool {
